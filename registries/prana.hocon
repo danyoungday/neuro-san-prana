@@ -34,16 +34,17 @@
                 # its description acts as an initial prompt. 
 
                 "description": """
-I can help you determine a criteria based on a provided news article.
-Give me a date, region, and news article URL and I will provide you with a score for a given criteria.
+I can help you determine the level of policy for a date and region based on a provided news article.
+Give me a date, region, policy, and news article URL and I will provide you with a policy score for the date and region based on the news article.
 """
             },
 
             "instructions": """
-You are the scorer of criteria.
-You will be asked to score a criteria based on a date, region, and news article passed in by the user.
+You are the scorer of policies.
+You will be asked to score the level of policy on a given date in a given region using a news article passed in by the user.
 Before you do anything, first find relevant historical data from the archive using the archivist tool.
-Then you will analyze the article.
+DO NOT call the news_analyzer tool until you have retrieved the historical data.
+Then you will analyze the article, using the news_analyzer to compute a score for the policy.
 Give your response to the user in the format: "score, reasoning".
 """,
             "tools": ["news_analyzer", "archivist"]
@@ -52,43 +53,45 @@ Give your response to the user in the format: "score, reasoning".
         {
             "name": "archivist",
             "function": {
-                "description": "Returns relevant historical data from the archive for a given date, region, and criteria.",
+                "description": "Returns relevant historical data from the archive for a given date, region, and policy.",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "date": {
                             "type": "string",
-                            "description": "A string containing the date."
+                            "description": "A string containing the date to score the level of policy on."
                         },
                         "region": {
                             "type": "string",
-                            "description": "A string containing the region."
+                            "description": "A string containing the region to score the policy for."
                         },
-                        "criteria": {
+                        "policy": {
                             "type": "string",
-                            "description": "The criteria by which the article is being scored."
+                            "description": "The policy that the article is being scored for."
                         }
                     },
-                    "required": ["date", "region", "criteria"]
+                    "required": ["date", "region", "policy"]
                 }
             },
             "instructions": """
 You are an archivist.
-You will be passed a date, region, and criteria.
-First you will query the PersistorReaderTool using the date, region, and criteria.
+You will be passed a date, region, and policy.
+First you will query the PersistorReaderTool using the date, region, and policy.
 Then you will output the retrieved historical data from the archive in the format you received it in.
-If no data is found, output that you were not able to find any historical data for the given date, region, and criteria.
+If no data is found, output that you were not able to find any historical data for the given date, region, and policy.
 """,
             "tools": [PersistorReaderTool]
-            "command": "Retrieve historical data from the archive for the given date, region, and criteria. If no data is found, output that you were unable to find any.",
+            "command": "Retrieve historical data from the archive for the given date, region, and policy. If no data is found, output that you were unable to find any.",
         },
         # PERSISTOR READER TOOL
         {
             "name": "PersistorReaderTool",
             "function": {
                 "description": """
-Loads relevant historical data from the archive for a given date, region, and criteria.
-The date, region, and criteria must be passed as arguments.
+Loads relevant historical data from the archive for a given date, region, and policy.
+The date, region, and policy must be passed as arguments.
+Returns all scores for the given policy and region before or on the given date.
+Returns the historical data in the format: "date:<date>, region:<region>, policy:<policy>, score:<score>" in rows.
 You MUST call this tool to retrieve relevant historical data from the archive.
                 """,
                 "parameters": {
@@ -96,18 +99,18 @@ You MUST call this tool to retrieve relevant historical data from the archive.
                     "properties": {
                         "date": {
                             "type": "string",
-                            "description": "The date."
+                            "description": "A string containing the date to score the level of policy on."
                         },
                         "region": {
                             "type": "string",
-                            "description": "The region."
+                            "description": "A string containing the region to score the policy for."
                         },
-                        "criteria": {
+                        "policy": {
                             "type": "string",
-                            "description": "The criteria to rate the article with."
-                        },
+                            "description": "The policy that the article is being scored for."
+                        }
                     },
-                    "required": ["date", "region", "criteria"]
+                    "required": ["date", "region", "policy"]
                 }
             },
             "class": "persistor_reader.PersistorReaderTool",
@@ -116,7 +119,7 @@ You MUST call this tool to retrieve relevant historical data from the archive.
         {
             "name": "news_analyzer",
             "function": {
-                "description": "Returns a score for a given criteria based on the guidelines and news article, possibly using historical data to inform the score.",
+                "description": "Returns a score for a given policy on a given date in a given region, based on the guidelines, news article, and historical data.",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -126,31 +129,36 @@ You MUST call this tool to retrieve relevant historical data from the archive.
                         },
                         "date": {
                             "type": "string",
-                            "description": "A string containing the date."
+                            "description": "A string containing the date to score the level of policy on."
                         },
                         "region": {
                             "type": "string",
-                            "description": "A string containing the region."
+                            "description": "A string containing the region to score the policy for."
                         },
-                        "criteria": {
+                        "policy": {
                             "type": "string",
-                            "description": "The criteria that should be measured using the article and, if present, the historical data as well."
+                            "description": "The policy whos level should be measured for the given date and region using the article and historical data."
                         },
                         "historical_data": {
                             "type": "string",
                             "description": "A string containing historical data relevant to the date, region, and criteria."
                         },
                     },
-                    "required": ["article_url", "date", "region", "criteria", "historical_data"]
+                    "required": ["article_url", "date", "region", "policy", "historical_data"]
                 }
             },
             "instructions": """
 You are a news article analyzer.
-You will be passed a news article name and a criteria to score it by.
+You are provided a date and region which you will score the level of policy for using a news article and historical data.
 The first thing you will do is to scrape the article from the provided article_url using the WebPageReaderTool.
-You will analyze the article and return a score for the given criteria, where 0 is the lowest and 3 is the highest.
-Here are some guidelines for critieria you may be asked to score by and how you should score them:
-- "School Closing" - 0: no measures, 1: recommend closing or all schools open with alterations resulting in significant differences compared to non-Covid-19 operations, 2: require closing (only some levels or categories, eg just high school, or just public schools), 3: require closing all levels
+Then, you will analyze the article and return a score for the given policy on the given date in the given region, based on the guidelines, news article, and historical data.
+Here are some guidelines for policies you may be asked to score and how you should score them:
+- "School Closing"
+    - 0: no measures
+    - 1: recommend closing or all schools open with alterations resulting in significant differences compared to non-Covid-19 operations
+    - 2: require closing (only some levels or categories, eg just high school, or just public schools)
+    - 3: require closing all levels
+When you assign your score, do so FOR THE GIVEN DATE AND REGION. If the article contains information about the policy for a different date or region, you should take it into account, but remember your final score is ON THE DATE AND REGION PASSED IN. For example, if the article says a policy will take effect in November 2022, but the date you are scoring is in October 2022, you should not assign a score based on the future policy.
 You will explain your reasoning for the score you give in relation to the guidelines and the historical data.
 Your output will be the score followed by your reasoning.
 """,

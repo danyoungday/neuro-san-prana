@@ -17,7 +17,7 @@ import pandas as pd
 
 class PersistorReaderTool(CodedTool):
     """
-    CodedTool implementation loads previously persisted {date, region, criteria, and score} tuples from disk.
+    CodedTool implementation loads previously persisted {date, region, policy, and score} tuples from disk.
     Returns the JSON object as a dictionary.
     """
 
@@ -36,7 +36,7 @@ class PersistorReaderTool(CodedTool):
                 The argument dictionary expects the following keys:
                     "date" the date.
                     "region" the region.
-                    "criteria" the criteria being measured.
+                    "policy" the policy being measured.
 
         :param sly_data: A dictionary whose keys are defined by the agent hierarchy,
                 but whose values are meant to be kept out of the chat stream.
@@ -54,7 +54,7 @@ class PersistorReaderTool(CodedTool):
         :return:
             In case of successful execution:
                 A string of persisted data in the format:
-                    "date:<date>, region:<region>, criteria:<criteria>, score:<score>"
+                    "date:<date>, region:<region>, policy:<policy>, score:<score>"
                 with new entries on each line.
             otherwise:
                 A text string an error message in the format:
@@ -62,9 +62,9 @@ class PersistorReaderTool(CodedTool):
         """
         date: str = args.get("date", None)
         region: str = args.get("region", None)
-        criteria: str = args.get("criteria", None)
-        if date is None or region is None or criteria is None:
-            return "Error: No date, region, or criteria provided."
+        policy: str = args.get("policy", None)
+        if date is None or region is None or policy is None:
+            return "Error: No date, region, or policy provided."
 
         # Parse date to datetime object
         try:
@@ -72,11 +72,11 @@ class PersistorReaderTool(CodedTool):
         except ValueError as e:
             return f"Error: Failed to parse date {date}: {e}"
 
-        # Filter the DataFrame based on the provided date, region, and criteria
+        # Filter the DataFrame based on the provided date, region, and policy
         df = pd.read_csv(self.persisted_path)
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
         filtered_df = df[
-            (df["date"] <= date_parsed) & (df["region"] == region) & (df["criteria"] == criteria)
+            (df["date"] <= date_parsed) & (df["region"] == region) & (df["policy"] == policy)
         ]
 
         # Parse each row into the string we're going to return to the LLM
@@ -84,14 +84,14 @@ class PersistorReaderTool(CodedTool):
         n_rows = 0
         filtered_df = filtered_df.astype(str)
         for _, row in filtered_df.iterrows():
-            response += f"date:{row['date']}, region:{row['region']}, criteria:{row['criteria']}, score:{row['score']}\n"  # noqa: E501
+            response += f"date:{row['date']}, region:{row['region']}, policy:{row['policy']}, score:{row['score']}\n"  # noqa: E501
             n_rows += 1
 
         print(f"---------------- Found {n_rows} rows ----------------")
 
         # If no rows were found, return a string saying so
         if response == "":
-            return f"No data found for date {date}, region {region}, criteria {criteria}."
+            return f"No data found for date {date}, region {region}, policy {policy}."
 
         # Return the response string
         return response.strip()

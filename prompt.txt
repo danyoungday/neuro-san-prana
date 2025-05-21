@@ -1,1 +1,3 @@
-Score the criteria of "School Closing" with date "December 1 2020", region "United States" using article at URL: "https://web.archive.org/web/20201022013733/https://www.tulsaschools.org/about/news/news-item/~board/district-news/post/update-on-quarter-two-modes-of-learning"
+Score the policy of "School Closing" with date "December 1 2020", region "United States", using article at URL: "https://web.archive.org/web/20201022013733/https://www.tulsaschools.org/about/news/news-item/~board/district-news/post/update-on-quarter-two-modes-of-learning"
+
+Score the policy of "School Closing" with date "May 23 2021", region "United States", using article at URL: https://web.archive.org/web/20210607201137/https://info.burbio.com/school-tracker-update-may-24/
