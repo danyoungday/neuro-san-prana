@@ -1,0 +1,107 @@
+
+# Copyright (C) 2023-2025 Cognizant Digital Business, Evolutionary AI.
+# All Rights Reserved.
+# Issued under the Academic Public License.
+#
+# You can be released from the terms, and requirements of the Academic Public
+# License by purchasing a commercial license.
+# Purchase of a commercial license is mandatory for any use of the
+# neuro-san SDK Software in commercial settings.
+#
+# END COPYRIGHT
+{
+    "llm_config": {
+        "model_name": "gpt-4o",
+    },
+    "tools": [
+        # These tool definitions do not have to be in any particular order
+        # How they are linked and call each other is defined within their
+        # own specs.  This could be a graph, potentially even with cycles.
+
+        # This first guy is the "Front Man".  He is identified as such because
+        # he is the only one with no parameters in his function definition,
+        # and therefore he needs to talk to the outside world to get things rolling.
+        {
+            "name": "news_coordinator",
+
+            # Note that there are no parameters defined for this guy's "function" key.
+            # This is the primary way to identify this tool as a front-man,
+            # distinguishing it from the rest of the tools.
+
+            "function": {
+
+                # When there are no function parameters to the front-man,
+                # its description acts as an initial prompt. 
+
+                "description": """
+I can help you create a tabular dataset based on news articles.
+Give me a news article and a given criteria to rank it by.
+"""
+            },
+
+            "instructions": """
+You are the curator of news datasets.
+You will be asked to create a tabular dataset based on news articles passed in by the user.
+You will use your downchain tools to extract relevant information from the articles and collate them into a csv dataset.
+Give your response to the user in the format: "location, score, reasoning".
+""",
+            "tools": ["news_analyzer"]
+        },
+
+        # The synonymizer is the lowest level tool and does not call anyone else.
+        # He is called by the front-man.
+        {
+            "name": "news_analyzer",
+            "function": {
+                "description": "Returns a score from 0-3 for a given criteria based on the news article, with 0 being the lowest and 3 being the highest.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "article_url": {
+                            "type": "string",
+                            "description": "A string containing the url to the news article to be loaded and then analyzed."
+                        },
+                        "criteria": {
+                            "type": "string",
+                            "description": "The criteria by which the article should be scored from 0-3."
+                        }
+                    },
+                    "required": ["article_url", "criteria"]
+                }
+            },
+            "instructions": """
+You are a news article analyzer.
+You will be passed a news article name and a criteria to score it by.
+The first thing you will do is to scrape the article from the provided article_url using the WebPageReaderTool.
+You will analyze the article and return a score for the given criteria, where 0 is the lowest and 3 is the highest.
+Here are some guidelines for critieria you may be asked to score by and how you should score them:
+- "School Closing" - 0: no measures, 1: recommend closing or all schools open with alterations resulting in significant differences compared to non-Covid-19 operations, 2: require closing (only some levels or categories, eg just high school, or just public schools), 3: require closing all levels
+You will explain your reasoning for the score you give in relation to the guidelines.
+Your output will be the score followed by your reasoning.
+""",
+            "tools": [WebPageReaderTool]
+            "command": "Analyze the article and return a score from 0-3 for the given criteria, where 0 is the lowest and 3 is the highest. Explain your reasoning for the score you give. Your output will be the score followed by your reasoning.",
+        },
+        {
+            "name": "WebPageReaderTool",
+            "function": {
+                "description": """
+Scrapes the text of a news article from a provided article_url.
+The url pointing to the news article must be passed as an argument.
+You MUST call this tool to scrape a specified news article.
+                """,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "article_url": {
+                            "type": "string",
+                            "description": "The url of the news article to be scraped."
+                        },
+                    },
+                    "required": ["article_url"]
+                }
+            },
+            "class": "webpage_reader.WebPageReaderTool",
+        },
+    ]
+}

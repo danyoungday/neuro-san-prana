@@ -174,3 +174,7 @@ cython_debug/
 
 # macOS folder metadata
 .DS_Store
+
+# Some additional stuff for project resilience
+data/Ox**
+!data/edav.ipynb
