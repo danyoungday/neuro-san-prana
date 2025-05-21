@@ -25,7 +25,7 @@ class PersistorReaderTool(CodedTool):
         """
         Constructs a PersistorReader for the PRANA system.
         """
-        self.persisted_path = "data/ox/persistence.csv"
+        self.persisted_path = "data/persistence.csv"
 
     def invoke(self, args: Dict[str, Any], sly_data: Dict[str, Any]) -> Union[str, Dict[str, Any]]:
         """
@@ -54,7 +54,7 @@ class PersistorReaderTool(CodedTool):
         :return:
             In case of successful execution:
                 A string of persisted data in the format:
-                    "date:<date>, region:<region>, criteria:<criteria>, score:<score>, source:<source>"
+                    "date:<date>, region:<region>, criteria:<criteria>, score:<score>"
                 with new entries on each line.
             otherwise:
                 A text string an error message in the format:
@@ -72,18 +72,19 @@ class PersistorReaderTool(CodedTool):
         except ValueError as e:
             return f"Error: Failed to parse date {date}: {e}"
 
-        # Filter the DataFrame based on the provided date, region, and criteria -> convert to string
+        # Filter the DataFrame based on the provided date, region, and criteria
         df = pd.read_csv(self.persisted_path)
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
         filtered_df = df[
             (df["date"] <= date_parsed) & (df["region"] == region) & (df["criteria"] == criteria)
         ]
-        filtered_df = filtered_df.astype(str)
 
         # Parse each row into the string we're going to return to the LLM
         response = ""
         n_rows = 0
+        filtered_df = filtered_df.astype(str)
         for _, row in filtered_df.iterrows():
-            response += f"date:{row['date']}, region:{row['region']}, criteria:{row['criteria']}, score:{row['score']}, source:{row['source']}\n"  # noqa: E501
+            response += f"date:{row['date']}, region:{row['region']}, criteria:{row['criteria']}, score:{row['score']}\n"  # noqa: E501
             n_rows += 1
 
         print(f"---------------- Found {n_rows} rows ----------------")

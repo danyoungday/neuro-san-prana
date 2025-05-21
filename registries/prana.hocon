@@ -42,7 +42,8 @@ Give me a date, region, and news article URL and I will provide you with a score
             "instructions": """
 You are the scorer of criteria.
 You will be asked to score a criteria based on a date, region, and news article passed in by the user.
-You will use your downchain tools to extract relevant information from the article and find relevant historical data from the archive. Then you will analyze the article.
+Before you do anything, first find relevant historical data from the archive using the archivist tool.
+Then you will analyze the article.
 Give your response to the user in the format: "score, reasoning".
 """,
             "tools": ["news_analyzer", "archivist"]
@@ -150,7 +151,7 @@ The first thing you will do is to scrape the article from the provided article_u
 You will analyze the article and return a score for the given criteria, where 0 is the lowest and 3 is the highest.
 Here are some guidelines for critieria you may be asked to score by and how you should score them:
 - "School Closing" - 0: no measures, 1: recommend closing or all schools open with alterations resulting in significant differences compared to non-Covid-19 operations, 2: require closing (only some levels or categories, eg just high school, or just public schools), 3: require closing all levels
-You will explain your reasoning for the score you give in relation to the guidelines.
+You will explain your reasoning for the score you give in relation to the guidelines and the historical data.
 Your output will be the score followed by your reasoning.
 """,
             "tools": [WebPageReaderTool]
