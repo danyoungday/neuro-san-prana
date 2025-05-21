@@ -34,26 +34,88 @@
                 # its description acts as an initial prompt. 
 
                 "description": """
-I can help you create a tabular dataset based on news articles.
-Give me a news article and a given criteria to rank it by.
+I can help you determine a criteria based on a provided news article.
+Give me a date, region, and news article URL and I will provide you with a score for a given criteria.
 """
             },
 
             "instructions": """
-You are the curator of news datasets.
-You will be asked to create a tabular dataset based on news articles passed in by the user.
-You will use your downchain tools to extract relevant information from the articles and collate them into a csv dataset.
-Give your response to the user in the format: "location, score, reasoning".
+You are the scorer of criteria.
+You will be asked to score a criteria based on a date, region, and news article passed in by the user.
+You will use your downchain tools to extract relevant information from the article and find relevant historical data from the archive. Then you will analyze the article.
+Give your response to the user in the format: "score, reasoning".
 """,
-            "tools": ["news_analyzer"]
+            "tools": ["news_analyzer", "archivist"]
         },
-
-        # The synonymizer is the lowest level tool and does not call anyone else.
-        # He is called by the front-man.
+        # ARCHIVIST
+        {
+            "name": "archivist",
+            "function": {
+                "description": "Returns relevant historical data from the archive for a given date, region, and criteria.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "description": "A string containing the date."
+                        },
+                        "region": {
+                            "type": "string",
+                            "description": "A string containing the region."
+                        },
+                        "criteria": {
+                            "type": "string",
+                            "description": "The criteria by which the article is being scored."
+                        }
+                    },
+                    "required": ["date", "region", "criteria"]
+                }
+            },
+            "instructions": """
+You are an archivist.
+You will be passed a date, region, and criteria.
+First you will query the PersistorReaderTool using the date, region, and criteria.
+Then you will output the retrieved historical data from the archive in the format you received it in.
+If no data is found, output that you were not able to find any historical data for the given date, region, and criteria.
+""",
+            "tools": [PersistorReaderTool]
+            "command": "Retrieve historical data from the archive for the given date, region, and criteria. If no data is found, output that you were unable to find any.",
+        },
+        # PERSISTOR READER TOOL
+        {
+            "name": "PersistorReaderTool",
+            "function": {
+                "description": """
+Loads relevant historical data from the archive for a given date, region, and criteria.
+The date, region, and criteria must be passed as arguments.
+You MUST call this tool to retrieve relevant historical data from the archive.
+                """,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "description": "The date."
+                        },
+                        "region": {
+                            "type": "string",
+                            "description": "The region."
+                        },
+                        "criteria": {
+                            "type": "string",
+                            "description": "The criteria to rate the article with."
+                        },
+                    },
+                    "required": ["date", "region", "criteria"]
+                }
+            },
+            "class": "persistor_reader.PersistorReaderTool",
+        },
+        # NEWS ANALYZER
         {
             "name": "news_analyzer",
             "function": {
-                "description": "Returns a score from 0-3 for a given criteria based on the news article, with 0 being the lowest and 3 being the highest.",
+                "description": "Returns a score for a given criteria based on the guidelines and news article, possibly using historical data to inform the score.",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -61,12 +123,24 @@ Give your response to the user in the format: "location, score, reasoning".
                             "type": "string",
                             "description": "A string containing the url to the news article to be loaded and then analyzed."
                         },
+                        "date": {
+                            "type": "string",
+                            "description": "A string containing the date."
+                        },
+                        "region": {
+                            "type": "string",
+                            "description": "A string containing the region."
+                        },
                         "criteria": {
                             "type": "string",
-                            "description": "The criteria by which the article should be scored from 0-3."
-                        }
+                            "description": "The criteria that should be measured using the article and, if present, the historical data as well."
+                        },
+                        "historical_data": {
+                            "type": "string",
+                            "description": "A string containing historical data relevant to the date, region, and criteria."
+                        },
                     },
-                    "required": ["article_url", "criteria"]
+                    "required": ["article_url", "date", "region", "criteria", "historical_data"]
                 }
             },
             "instructions": """
@@ -82,6 +156,7 @@ Your output will be the score followed by your reasoning.
             "tools": [WebPageReaderTool]
             "command": "Analyze the article and return a score from 0-3 for the given criteria, where 0 is the lowest and 3 is the highest. Explain your reasoning for the score you give. Your output will be the score followed by your reasoning.",
         },
+        # WEBPAGE READER TOOL
         {
             "name": "WebPageReaderTool",
             "function": {
