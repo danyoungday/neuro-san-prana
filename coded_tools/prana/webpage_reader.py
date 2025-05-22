@@ -7,6 +7,7 @@
 # Purchase of a commercial license is mandatory for any use of the
 # neuro-san-demos SDK Software in commercial settings.
 #
+from io import BytesIO
 from typing import Any
 from typing import Dict
 from typing import Union
@@ -14,6 +15,7 @@ from typing import Union
 import requests
 from bs4 import BeautifulSoup
 from neuro_san.interfaces.coded_tool import CodedTool
+from pypdf import PdfReader
 
 
 class WebPageReaderTool(CodedTool):
@@ -33,7 +35,7 @@ class WebPageReaderTool(CodedTool):
                 by the calling agent. This dictionary is to be treated as read-only.
 
                 The argument dictionary expects the following keys:
-                    "article_url" the url pointing to the news article the text is to be scraped from.
+                    "news_url" the url pointing to the news article the text is to be scraped from.
 
         :param sly_data: A dictionary whose keys are defined by the agent hierarchy,
                 but whose values are meant to be kept out of the chat stream.
@@ -55,27 +57,67 @@ class WebPageReaderTool(CodedTool):
                 A text string an error message in the format:
                 "Error: <error message>"
         """
-        article_url: str = args.get("article_url", None)
-        if article_url is None:
+        news_url: str = args.get("article_url", None)
+        if news_url is None:
             return "Error: No news url provided."
         print(">>>>>>>>>>>>>>>>>>> Extracting text >>>>>>>>>>>>>>>>>>")
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"  # noqa E501
         }
-        try:
-            response = requests.get(article_url, headers=headers)
-            response.raise_for_status()
-
-            soup = BeautifulSoup(response.text, "html.parser")
-            texts = soup.stripped_strings
-            full_text = " ".join(texts)
-            print(">>>>>>>>>>>>>>>>>>> Done! >>>>>>>>>>>>>>>>>>")
-            return full_text
-        except Exception as e:
-            return f"Error: Unable to process the URL. {str(e)}"
+        if news_url.endswith(".pdf"):
+            try:
+                text = self.read_pdf(news_url, headers)
+                print(">>>>>>>>>>>>>>>>>>> Extracted pdf >>>>>>>>>>>>>>>>>>")
+                return text
+            except Exception as e:
+                return f"Error: Failed to fetch the PDF. {str(e)}"
+        else:
+            try:
+                text = self.read_html(news_url, headers)
+                print(">>>>>>>>>>>>>>>>>>> Extracted text >>>>>>>>>>>>>>>>>>")
+                return text
+            except Exception as e:
+                return f"Error: Failed to fetch the webpage. {str(e)}"
 
     async def async_invoke(self, args: Dict[str, Any], sly_data: Dict[str, Any]) -> str:
         """
         Delegates to the synchronous invoke method for now.
         """
         return self.invoke(args, sly_data)
+        
+
+    def read_html(self, url: str, headers: dict[str, str]) -> str:
+        """
+        Reads the content from a given URL that links to an HTML page.
+
+        :param url: The URL of the webpage to read.
+        :return: The text content of the webpage.
+        """
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        texts = soup.stripped_strings
+        full_text = " ".join(texts)
+        return full_text
+
+    def read_pdf(self, url: str, headers: dict[str, str]) -> str:
+        """
+        Reads the content from a given URL that links to a PDF file.
+
+        :param url: The URL of the PDF file to read.
+        :return: The text content of the PDF file.
+        """
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        # Step 2: Load PDF into pypdf reader
+        pdf_file = BytesIO(response.content)
+        reader = PdfReader(pdf_file)
+
+        # Step 3: Extract text from all pages
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text() or ""
+
+        return text

@@ -1,3 +1,9 @@
-Score the policy of "School Closing" with date "December 1 2020", region "United States", using article at URL: "https://web.archive.org/web/20201022013733/https://www.tulsaschools.org/about/news/news-item/~board/district-news/post/update-on-quarter-two-modes-of-learning"
+Score the policy of "C1E_School closing" with date "July 1 2020", region "United States", using article at URL: "https://web.archive.org/web/20201022013733/https://www.tulsaschools.org/about/news/news-item/~board/district-news/post/update-on-quarter-two-modes-of-learning"
 
-Score the policy of "School Closing" with date "May 23 2021", region "United States", using article at URL: https://web.archive.org/web/20210607201137/https://info.burbio.com/school-tracker-update-may-24/
+Score the policy of "C1E_School closing" with date "December 1 2020", region "United States", using article at URL: "https://web.archive.org/web/20201022013733/https://www.tulsaschools.org/about/news/news-item/~board/district-news/post/update-on-quarter-two-modes-of-learning"
+
+Score the policy of "C1E_School closing" with date "May 23 2021", region "United States", using article at URL: https://web.archive.org/web/20210607201137/https://info.burbio.com/school-tracker-update-may-24/
+
+Score policy "C1E_School closing" for date "March 14 2020" in region "United States" using article "https://web.archive.org/web/20200429052741/https://www.statesman.com/news/20200313/coronavirus-in-austin-cancellations-school--restaurant-closures"
+
+Score the policy "C1E_School closing" on "April 30 2020" for region "United States" using news articles: "https://web.archive.org/web/20200429052741/https://www.statesman.com/news/20200313/coronavirus-in-austin-cancellations-school--restaurant-closures" and "https://web.archive.org/web/20200611162217/https://www.dallasnews.com/news/public-health/2020/03/20/at-midnight-bars-gyms-and-massage-parlors-across-texas-close-9-things-you-need-to-know/"
