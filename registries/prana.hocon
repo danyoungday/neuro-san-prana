@@ -1,0 +1,276 @@
+
+# Copyright (C) 2023-2025 Cognizant Digital Business, Evolutionary AI.
+# All Rights Reserved.
+# Issued under the Academic Public License.
+#
+# You can be released from the terms, and requirements of the Academic Public
+# License by purchasing a commercial license.
+# Purchase of a commercial license is mandatory for any use of the
+# neuro-san SDK Software in commercial settings.
+#
+# END COPYRIGHT
+{
+    "llm_config": {
+        "model_name": "gpt-4o",
+    },
+    "commondefs": {
+        "replacement_strings": {
+            "aaosa_instructions": """
+When you receive an inquiry, you will:
+
+    1. Call your tools to determine which down-chain agents in your tools are
+       responsible for all or part of it.
+    2. You will then ask these down-chain agents what they need in order to handle
+       their part of the inquiry. Once the requirements are gathered, you will,
+    3. Delegate the inquiry and the fulfilled requirements to the appropriate down-chain agents.
+    4. Once all down-chain agents respond, you will compile their responses and return the final response.
+
+You may, in turn, be called by other agents in the system and have to act as a down-chain to them.
+            """
+        },
+        "replacement_values": {
+            "aaosa_call": {
+                "description": "Depending on the mode, returns a natural language string in response.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "inquiry": {
+                            "type": "string",
+                            "description": "The inquiry"
+                        },
+                        "mode": {
+                            "type": "string",
+                            "description": """
+indicates whether the agent is being asked to determine if the inquiry belongs to it
+in its entirety or in part. or if it is being asked to provide requirements to fulfill
+the inquiry, if any. or if it is being asked to respond to the inquiry.
+                            """
+                        }
+                    },
+                    "required": [
+                        "inquiry",
+                        "mode"
+                    ]
+                }
+            },
+            "aaosa_command": "Explain if you can respond to all or parts of the inquiry and what you need in order to respond, if anything."
+        }
+    },
+    "tools": [
+        # These tool definitions do not have to be in any particular order
+        # How they are linked and call each other is defined within their
+        # own specs.  This could be a graph, potentially even with cycles.
+
+        # This first guy is the "Front Man".  He is identified as such because
+        # he is the only one with no parameters in his function definition,
+        # and therefore he needs to talk to the outside world to get things rolling.
+        {
+            "name": "news_coordinator",
+
+            # Note that there are no parameters defined for this guy's "function" key.
+            # This is the primary way to identify this tool as a front-man,
+            # distinguishing it from the rest of the tools.
+
+            "function": {
+
+                # When there are no function parameters to the front-man,
+                # its description acts as an initial prompt. 
+
+                "description": """
+I can help you determine the level of policy for a date and region based on provided news articles.
+Give me a date, region, policy, and news article URLs and I will provide you with a policy score for the date and region based on the news articles.
+"""
+            },
+
+            "instructions": """
+You are the scorer of policies.
+You will be asked to score the level of policy on a given date in a given region using one or more news articles passed in by the user.
+Before you do anything, first find relevant historical data from the archive by requesting data from the archivist tool.
+DO NOT call the news_analyzer tool until you have attempted to retrieve historical data. If no historical data is found, continue with the news_analyzer tool and pass "no historical data found" in the historical_data parameter.
+Then you will analyze the article, using the news_analyzer to compute a score for the policy.
+Once you have computed the score, ask the archivist tool to save the new data to archive.
+Finally, return your output to the user nicely. Start with a sentence summary of the score, then provide your reasoning. Format the output nicely in markdown.
+""",
+            "tools": ["news_analyzer", "archivist"]
+        },
+        # ARCHIVIST
+        {
+            "name": "archivist",
+            "function": "aaosa_call",
+            "instructions": """
+    You are an archivist.
+    If asked to retrieve some historical data, you will be passed a date, region, and policy.
+        First you will query the PersistorReaderTool using the date, region, and policy.
+        Then you will output the retrieved historical data from the archive in the format you received it in.
+        If no data is found, output that you were not able to find any historical data for the given date, region, and policy.
+    If asked to save new data, you will be passed a date, region, policy, and score.
+        First you will call the PersistorWriterTool using the date, region, policy, and score.
+        Then you will output that you have saved the new data to the archive.
+        If the data was not saved, output that you were not able to save the new data to the archive.
+    {aaosa_instructions}
+                """,
+            "tools": ["PersistorReaderTool", "PersistorWriterTool"],
+            "command": "{aaosa_command}"
+        },
+        # PERSISTOR READER TOOL
+        {
+            "name": "PersistorReaderTool",
+            "function": {
+                "description": """
+Loads relevant historical data from the archive for a given date, region, and policy.
+The date, region, and policy must be passed as arguments.
+Returns all scores for the given policy and region before or on the given date.
+Returns the historical data in the format: "date:<date>, region:<region>, policy:<policy>, score:<score>" in rows.
+You MUST call this tool to retrieve relevant historical data from the archive.
+                """,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "description": "A string containing the date to score the level of policy on."
+                        },
+                        "region": {
+                            "type": "string",
+                            "description": "A string containing the region to score the policy for."
+                        },
+                        "policy": {
+                            "type": "string",
+                            "description": "The policy that the article is being scored for."
+                        }
+                    },
+                    "required": ["date", "region", "policy"]
+                }
+            },
+            "class": "persistor_reader.PersistorReaderTool",
+        },
+        # PERSISTOR WRITER TOOL
+        {
+            "name": "PersistorWriterTool",
+            "function": {
+                "description": """
+Writes newly scored data to the archive for a given date, region, policy, and score.
+The date, region, policy, and score must be passed as arguments.
+You MUST call this tool to store newly scored data to the historical data archive.
+                """,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "description": "A string containing the date to score the level of policy on."
+                        },
+                        "region": {
+                            "type": "string",
+                            "description": "A string containing the region to score the policy for."
+                        },
+                        "policy": {
+                            "type": "string",
+                            "description": "The policy that the article is being scored for."
+                        },
+                        "score": {
+                            "type": "string",
+                            "description": "The score for the policy on the given date in the given region."
+                        }
+                    },
+                    "required": ["date", "region", "policy", "score"]
+                }
+            },
+            "class": "persistor_writer.PersistorWriterTool",
+        },
+        # NEWS ANALYZER
+        {
+            "name": "news_analyzer",
+            "function": {
+                "description": "Returns a score for a given policy on a given date in a given region, based on the guidelines, one or more news articles, and historical data.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "article_urls": {
+                            "type": "array",
+                            "description": "A list of strings containing urls to the news articles to be loaded and then analyzed."
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "date": {
+                            "type": "string",
+                            "description": "A string containing the date to score the level of policy on."
+                        },
+                        "region": {
+                            "type": "string",
+                            "description": "A string containing the region to score the policy for."
+                        },
+                        "policy": {
+                            "type": "string",
+                            "description": "The policy whos level should be measured for the given date and region using the article and historical data."
+                        },
+                        "historical_data": {
+                            "type": "string",
+                            "description": "A string containing historical data relevant to the date, region, and criteria."
+                        },
+                    },
+                    "required": ["article_urls", "date", "region", "policy", "historical_data"]
+                }
+            },
+            "instructions": """
+You are a news article analyzer.
+You are provided a date and region which you will score the level of policy for using one or more news articles and historical data.
+The first thing you will do is to scrape the articles from each provided url in article_urls using the WebPageReaderTool.
+Next, you will load in the guidelines used to provide a score by calling the ExtractDocs tool.
+Then, you will analyze the articles and return a score and reasoning for the given policy on the given date in the given region, based on the guidelines, news articles, and historical data.
+Your reasoning in regards to the news articles should be separated by article such that the user knows your reasoning process for each article.
+Only use your own internal knowledge if the articles, historical data, and guidelines do not provide enough information to score the policy. If you do so, make sure to state that you are using your own internal knowledge clearly.
+When you assign your score, do so FOR THE GIVEN DATE AND REGION. If the articles contain information about the policy for a different date or region, you should take it into account, but remember your final score is ON THE DATE AND REGION PASSED IN.
+For example, if an article says a policy will take effect in November 2022, but the date you are scoring is in October 2022, you should not assign a score based on the future policy. Or if an article is for India but the region you are scoring is the US, you should not assign a score based on the Indian policy.
+You will explain your reasoning for the score you give in relation to the guidelines AND the historical data. If you do not use the historical data in your reasoning, you should say that you did not use it.
+Your output will be the score followed by your reasoning. Return your reasoning for each step in the process.
+""",
+            "tools": [WebPageReaderTool, ExtractDocs]
+            "command": "Analyze the articles and return a score for the given policy on the given date in the given region, based on the guidelines, news articles, and historical data. You will explain your reasoning for the score you give in relation to the guidelines and the historical data.",
+        },
+        # WEBPAGE READER TOOL
+        {
+            "name": "WebPageReaderTool",
+            "function": {
+                "description": """
+Scrapes the text of a single news article from a provided article_url.
+The url pointing to the news article must be passed as an argument.
+You MUST call this tool to scrape a specified news article.
+                """,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "article_url": {
+                            "type": "string",
+                            "description": "The url of the news article to be scraped."
+                        },
+                    },
+                    "required": ["article_url"]
+                }
+            },
+            "class": "webpage_reader.WebPageReaderTool",
+        },
+        # DOC EXTRACTOR TOOL
+        {
+            "name": "ExtractDocs",
+            "function": {
+                "description": """
+    Returns the text contents of all the files.
+    You MUST call this tool to read the text content of files.
+                """,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "directory": {
+                            "type": "string",
+                            "description": "The directory to read the text content of files from."
+                        },
+                    },
+                    "required": []
+                }
+            },
+            "class": "extract_docs.ExtractDocs"
+        },
+    ]
+}
