@@ -104,7 +104,7 @@ Finally, return your output to the user nicely. Start with a sentence summary of
         Then you will output the retrieved historical data from the archive in the format you received it in.
         If no data is found, output that you were not able to find any historical data for the given date, region, and policy.
     If asked to save new data, you will be passed a date, region, policy, and score.
-        First you will call the PersistorWriterTool using the date, region, policy, and score.
+        First you will call the PersistorWriterTool using the date, region, policy, and score. If the policy field ends in "policy", remove the word "policy" from the end of the string.
         Then you will output that you have saved the new data to the archive.
         If the data was not saved, output that you were not able to save the new data to the archive.
     {aaosa_instructions}

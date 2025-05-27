@@ -178,3 +178,4 @@ cython_debug/
 # Some additional stuff for project resilience
 data/Ox**
 !data/edav.ipynb
+logs/
