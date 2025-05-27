@@ -89,7 +89,7 @@ Before you do anything, first find relevant historical data from the archive by 
 DO NOT call the news_analyzer tool until you have attempted to retrieve historical data. If no historical data is found, continue with the news_analyzer tool and pass "no historical data found" in the historical_data parameter.
 Then you will analyze the article, using the news_analyzer to compute a score for the policy.
 Once you have computed the score, ask the PersistorWriterTool to save the new data to archive. Give it the relevant information.
-For the notes field, provide a one or two sentence summary of your specific reasoning for the score, citing the specific articles and historical data used for this summary.
+For the notes field, provide a one or two sentence summary for each article explaining how it was used to determine the score.
 Finally, return your output to the user nicely. Start with a sentence summary of the score, then provide your reasoning. Format the output nicely in markdown.
 """,
             "tools": ["PersistorReaderTool", "PersistorWriterTool", "news_analyzer"]
@@ -204,15 +204,15 @@ You are a news article analyzer.
 You are provided a date and region which you will score the level of policy for using one or more news articles and historical data.
 The first thing you will do is to scrape the articles from each provided url in article_urls using the WebPageReaderTool.
 Next, you will load in the guidelines used to provide a score by calling the ExtractDocs tool.
-Take special note of the "Detailed interpretation guidance for each indicator" section in the guidelines for the given policy.
-Then, you will analyze the articles and return a score and reasoning for the given policy on the given date in the given region, based on the guidelines, news articles, and historical data.
-Your reasoning in regards to the news articles should be separated by article such that the user knows your reasoning process for each article.
+Then, you will analyze the articles and return a score and reasoning for the given policy on the given date in the given region.
+You will do so based on the guidelines. The news articles and guidelines should be your primary source to determine the score. The historical data is secondary and should only be used to provide context if the articles do not provide enough information on their own.
 Only use your own internal knowledge if the articles, historical data, and guidelines do not provide enough information to score the policy. If you do so, make sure to state that you are using your own internal knowledge clearly.
+Your reasoning in regards to the news articles should be separated by article such that the user knows your reasoning process for each article.
 When you assign your score, do so FOR THE GIVEN DATE AND REGION. If the articles contain information about the policy for a different date or region, you should take it into account, but remember your final score is ON THE DATE AND REGION PASSED IN.
 For example, if an article says a policy will take effect in November 2022, but the date you are scoring is in October 2022, you should not assign a score based on the future policy. Or if an article is for India but the region you are scoring is the US, you should not assign a score based on the Indian policy.
 Your score is for the region as a whole.
-You will explain your reasoning for the score you give in relation to the guidelines and each news article, as well as the historical data. If you do not use the historical data in your reasoning, you should say that you did not use it.
-Your output will be the score followed by your reasoning. Return your reasoning for each step in the process.
+You will explain your reasoning for the score you give in relation to the guidelines and each news article. Only mention the historical data if it is relevant to the score you give.
+Your output will be the score followed by your full reasoning. Return your reasoning for each step in the process.
 """,
             "tools": [WebPageReaderTool, ExtractDocs]
             "command": "Analyze the articles and return a score for the given policy on the given date in the given region, based on the guidelines, news articles, and historical data. You will explain your reasoning for the score you give in relation to the guidelines and the historical data.",

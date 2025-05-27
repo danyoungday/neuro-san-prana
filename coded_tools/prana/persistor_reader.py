@@ -17,7 +17,7 @@ import pandas as pd
 
 class PersistorReaderTool(CodedTool):
     """
-    CodedTool implementation loads previously persisted {date, region, policy, and score} tuples from disk.
+    CodedTool implementation loads previously persisted {date, region, policy, score, notes} tuples from disk.
     Returns the JSON object as a dictionary.
     """
 
