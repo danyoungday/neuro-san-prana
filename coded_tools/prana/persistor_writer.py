@@ -38,6 +38,7 @@ class PersistorWriterTool(CodedTool):
                     "region" the region.
                     "policy" the policy being measured.
                     "score" the score for the policy.
+                    "notes" a brief summary of why the score was given.
 
         :param sly_data: A dictionary whose keys are defined by the agent hierarchy,
                 but whose values are meant to be kept out of the chat stream.
@@ -65,7 +66,8 @@ class PersistorWriterTool(CodedTool):
         region: str = args.get("region", None)
         policy: str = args.get("policy", None)
         score: str = args.get("score", None)
-        if date is None or region is None or policy is None or score is None:
+        notes: str = args.get("notes", None)
+        if date is None or region is None or policy is None or score is None or notes is None:
             return "Error: No date, region, policy, or score provided."
 
         # Parse date to datetime object
@@ -76,10 +78,11 @@ class PersistorWriterTool(CodedTool):
 
         # Create a new DataFrame with the provided data as a single row
         new_row = pd.DataFrame({
-            "date": [date_parsed],
-            "region": [region],
-            "policy": [policy],
-            "score": [score]
+            "Date": [date_parsed],
+            "Region": [region],
+            "Policy": [policy],
+            "Score": [score],
+            "Notes": [notes]
         })
 
         # Append the new row to the existing DataFrame

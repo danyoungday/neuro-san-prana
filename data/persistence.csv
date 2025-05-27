@@ -1,88 +1,79 @@
-Date,Region,Policy,score
-2020-03-16,Texas,C1E_School closing,3
-2020-03-20,Texas,C1E_School closing,3
-2020-04-02,Texas,C1E_School closing,3
-2020-05-01,Texas,C1E_School closing,3
-2020-06-03,Texas,C1E_School closing,1
-2020-07-06,Texas,C1E_School closing,2
-2020-07-23,Texas,C1E_School closing,2
-2020-08-03,Texas,C1E_School closing,1
-2020-08-20,Texas,C1E_School closing,2
-2020-08-21,Texas,C1E_School closing,1
-2020-08-26,Texas,C1E_School closing,1
-2020-09-01,Texas,C1E_School closing,2
-2020-09-20,Texas,C1E_School closing,3
-2020-09-21,Texas,C1E_School closing,1
-2020-09-24,Texas,C1E_School closing,1
-2020-10-14,Texas,C1E_School closing,1
-2020-10-29,Texas,C1E_School closing,score and reasoning
-2020-11-08,Texas,C1E_School closing,2
-2020-11-12,Texas,C1E_School closing,1
-2020-11-19,Texas,C1E_School closing,1
-2020-12-17,Texas,C1E_School closing,1
-2021-01-11,Texas,C1E_School closing,1
-2021-01-14,Texas,C1E_School closing,2
-2021-01-21,Texas,C1E_School closing,2
-2021-01-22,Texas,C1E_School closing,1
-2021-01-26,Texas,C1E_School closing,2
-2021-02-02,Texas,C1E_School closing,1
-2021-03-02,Texas,C1E_School closing,1
-2021-03-12,Texas,C1E_School closing,1
-2021-03-15,Texas,C1E_School closing,1
-2021-03-21,Texas,C1E_School closing,1
-2021-03-25,Texas,C1E_School closing,1
-2021-04-05,Texas,C1E_School closing,1
-2021-04-19,Texas,C1E_School closing,1
-2021-04-26,Texas,C1E_School closing,1
-2021-05-03,Texas,C1E_School closing,1
-2021-05-10,Texas,C1E_School closing,0
-2021-05-13,Texas,C1E_School closing,0
-2021-06-04,Texas,C1E_School closing,1
-2021-07-20,Texas,C1E_School closing,0
-2021-07-27,Texas,C1E_School closing,1
-2021-08-06,Texas,C1E_School closing,0
-2021-08-11,Texas,C1E_School closing,2
-2021-08-14,Texas,school closure,1
-2021-08-18,Texas,C1E_School closing,0
-2021-08-19,Texas,C1E_School closing,2
-2021-08-22,Texas,C1E_School closing,0
-2021-08-23,Texas,C1E_School closing,1
-2021-08-27,Texas,C1E_School closing,0
-2021-09-03,Texas,C1E_School closing,2
-2021-09-07,Texas,C1E_School closing,2
-2021-09-10,Texas,C1E_School closing,1
-2021-09-27,Texas,C1E_School closing,0
-2021-10-04,Texas,C1E_School closing,0
-2021-10-12,Texas,C1E_School closing,1
-2021-10-25,Texas,C1E_School closing,1
-2021-11-01,Texas,C1E_School closing,1
-2021-11-12,Texas,C1E_School closing,2
-2021-11-16,Texas,C1E_School closing,1
-2021-11-30,Texas,C1E_School closing,0
-2021-12-07,Texas,C1E_School closing,1
-2021-12-14,Texas,C1E_School closing,1
-2022-01-04,Texas,C1E_School closing,0
-2022-01-11,Texas,C1E_School closing,2
-2022-01-18,Texas,C1E_School closing,0
-2022-01-24,Texas,C1E_School closing,2
-2022-01-30,Texas,C1E_School closing,1
-2022-02-07,Texas,C1E_School closing,0
-2022-02-13,Texas,C1E_School closing,1
-2022-02-20,Texas,C1E_School closing,1
-2022-03-01,Texas,C1E_School closing,1
-2022-03-09,Texas,C1E_School closing,1
-2022-03-13,Texas,C1E_School closing,0
-2022-03-21,Texas,C1E_School closing,1
-2022-03-28,Texas,C1E_School closing,1
-2022-04-04,Texas,C1E_School closing,0
-2022-04-11,Texas,C1E_School closing,0
-2022-04-17,Texas,C1E_School closing,0
-2022-04-25,Texas,C1E_School closing,0 - no measures
-2022-05-02,Texas,C1E_School closing,0
-2022-05-09,Texas,C1E_School closing,0
-2022-05-16,Texas,C1E_School closing,1
-2022-06-13,Texas,C1E_School closing,0
-2022-07-19,Texas,C1E_School closing,1
-2022-07-23,Texas,C1E_School closing,0
-2022-08-31,Texas,C1E_School closing,0
-2022-10-20,Texas,C1E_School closing,0
+Date,Region,Policy,Score,Notes
+2020-03-16,Texas,C1E_School closing,3,"According to the documents, numerous Texas school districts extended closures beyond spring break as of March 16, 2020, aligning with a score of 3 for statewide school closure. Articles used: Texas School Closures document and Austin American-Statesman article."
+2020-03-20,Texas,C1E_School closing,3,Schools were closed to prevent the spread of COVID-19 following a rise in cases.
+2020-04-02,Texas,C1E_School closing,3,"On this date, the policy for school closures in Texas was set at a level 3, indicating significant restrictions."
+2020-05-01,Texas,C1E_School closing,3,Schools in Texas remained closed to mitigate the spread of COVID-19 as part of statewide measures.
+2020-06-03,Texas,C1E_School closing,2,"On June 3, 2020, Texas transitioned from full school closures to partial and recommended closures, with public schools resuming some operations under guidelines and summer school conducted virtually in districts like Dallas ISD. This indicates a score of 2, reflecting partial closures and operation under specific conditions. Sources include Governor's Executive Order, Fox 4 News, and University of Texas update."
+2020-07-06,Texas,C1E_School closing,2,"The score reflects partial school closures due to COVID-19, with some schools operating online and others having limited in-person attendance."
+2020-07-23,Texas,C1E_School closing,2,Schools in Texas were partially closed with certain grades attending in-person classes while others continued with remote learning to mitigate the spread of COVID-19.
+2020-08-03,Texas,C1E_School closing,2,"On August 3, 2020, the policy for school closures in Texas was set at a level 2, indicating partial closures. The Texas Education Agency allowed local school boards flexibility in reopening, with options for in-person, remote, or hybrid learning models, reflecting a partial closure status. The decision was based on the article from the Texas Governor's office and historical data showing a continuation of partial closures since June 2020."
+2020-08-21,Texas,C1E_School closing,2,"Based on the historical data and news articles, schools in Texas were operating under partial closures with hybrid and online learning models, reflecting a score of 2. Articles analyzed include ABC13 and Texas Tribune."
+2020-08-26,Texas,C1E_School closing,2,"The historical data and news articles indicate that Texas maintained a partial closure strategy for schools as of August 26, 2020. The mixed mode of instruction (online, hybrid, in-person with restrictions) reflects significant operational changes compared to normal operations. Articles from ABC13 and Austin government orders were used for this analysis."
+2020-09-01,Texas,C1E_School closing,2,"Based on the guidelines, news articles, and historical data, school districts in Texas were primarily operating remotely, constituting a partial closure. Local school boards opted for remote learning, aligning with a score of 2. Articles used include KSAT and Fox 7 Austin."
+2020-09-20,Texas,C1E_School closing,2,School closures were implemented at a partial level with some flexibility for local districts.
+2020-09-21,Texas,C1E_School closing,2,"The analysis of the NBC 5 Dallas-Fort Worth article indicates that while Texas school districts have autonomy regarding in-person or virtual learning, extended virtual learning requires approval to maintain funding, reflecting partial closures with operational changes. The historical data corroborates a score of 2, as Texas was operating under partial closures with hybrid models."
+2020-09-24,Texas,C1E_School closing,2,"Based on historical data, Texas maintained a level 2 policy for school closures on September 24, 2020, characterized by partial closures with hybrid and remote learning models across the state. This is consistent with the ongoing pattern since June 2020. Unable to retrieve specific news articles, but historical data provides a consistent narrative."
+2020-10-14,Texas,C1E_School closing,1,Schools in Texas are partially open with some restrictions due to COVID-19.
+2020-10-29,Texas,C1E_School closing,1,"On October 29, 2020, there were no statewide mandates for complete school closures in Texas. However, specific regions like El Paso were under significant restrictions due to local surges in COVID-19 cases. The strong recommendations for remote learning and the operational changes at universities suggest a mixed approach, where in-person activities were significantly limited, but not entirely closed at the statewide level."
+2020-11-08,Texas,C1E_School closing,2,The score indicates partial school closures with exceptions for vulnerable groups and children of essential workers.
+2020-11-12,Texas,C1E_School closing,2,"On November 12, 2020, Texas was likely operating under partial school closures, with some levels or categories of schools closed, while still allowing exceptions for particular groups such as vulnerable populations and children of essential workers. This aligns with the transition noted in the historical data from prior dates."
+2020-11-19,Texas,C1E_School closing,2,"On November 19, 2020, Texas operated under partial school closures, with flexibility for local districts to decide on closures or hybrid models. The Texas Education Agency allowed temporary remote learning shifts due to COVID-19 outbreaks, but required on-campus instruction for those lacking remote access. This reflects partial closures with operational changes and local discretion. Articles used: TEA Guidelines and ABC13 News."
+2020-12-17,Texas,C1E_School closing,2,"On December 17, 2020, Texas maintained a partial closure status where schools operated with a mix of remote and in-person learning, and decisions were made at the district level to accommodate local conditions. This was supported by the Fort Worth Star-Telegram article and historical data showing a continuation of partial closures since mid-2020."
+2021-01-11,Texas,C1E_School closing,2,"Based on an article from KFOX and historical data, Texas was in a transition phase with partial reopening of schools and significant operational changes, aligning with a score of 2. The article indicated certain districts planned to resume in-person learning, but not a full statewide reopening."
+2021-01-14,Texas,C1E_School closing,2,"Based on the Trinity University article and historical data, Texas maintained partial school closures with some virtual operations, aligning with a score of 2."
+2021-01-21,Texas,C1E_School closing,2,The score reflects partial school closures in Texas on this date due to rising COVID-19 cases.
+2021-01-22,Texas,C1E_School closing,3,Schools were closed for in-person learning due to the COVID-19 pandemic.
+2021-01-26,Texas,C1E_School closing,2,The score reflects partial school closures in Texas as of the specified date.
+2021-02-02,Texas,C1E_School closing,2,"The article from Click2Houston describes a partial closure in Fort Bend ISD, where some schools transitioned to online learning while others remained open or returned to face-to-face instruction, aligning with a score of 2 according to the OxCGRT guidelines."
+2021-03-02,Texas,C1E_School closing,2,"On March 2, 2021, Texas operated under partial school closures with significant local discretion as per TEA guidelines. Sources: Education Week, TEA Announcement, TexasISD."
+2021-03-12,Texas,C1E_School closing,1,"Based on historical data and news articles, schools in Texas were open with significant operational differences due to COVID-19 safety measures, such as mask mandates and other protocols. This aligns with a score of 1, reflecting that schools were operational but with significant alterations compared to normal operations."
+2021-03-15,Texas,C1E_School closing,1,"Based on news articles and historical data, schools in Texas were open with significant operational differences due to COVID-19 safety measures, such as mask mandates and other protocols. This aligns with a score of 1, reflecting that schools were operational but with significant alterations compared to normal operations."
+2021-03-25,Texas,C1E_School closing,1,"Texas schools were operational with modified health guidelines, such as the option for virtual instruction and reduced social distancing, aligning with the guidelines for a score of 1. Historical data also supports this score."
+2021-04-05,Texas,C1E_School closing,1,"The policy was rated as 1 because there were minimal school closures in Texas on this date, reflecting a low level of restriction."
+2021-04-19,Texas,C1E_School closing,1,"The score reflects that schools in Texas were partially open on this date, allowing some in-person attendance with restrictions."
+2021-04-26,Texas,C1E_School closing,1,"Schools were partially open with options for in-person attendance under altered conditions. This score reflects the Texas Education Agency's requirements and is consistent with historical data from April 5 and April 19, 2021."
+2021-05-03,Texas,C1E_School closing,1,"Based on historical data and news articles, Texas schools were operational with significant alterations, including options for virtual instruction and health safety measures. The TEA guidance allowed local discretion, aligning with a score of 1. Articles such as Education Week and KXAN support this assessment."
+2021-05-10,Texas,C1E_School closing,1,"Based on the CNN article and historical data, Texas schools were operational with significant alterations on May 10, 2021. The CNN article specifically mentions that schools in Texas were 'ordered open,' ensuring in-person learning options to maintain state funding, aligning with a score of 1 for operational but significantly altered conditions."
+2021-05-13,Texas,C1E_School closing,1,"Based on the CNN article and historical data, Texas schools were operational with significant alterations on May 13, 2021. The CNN article specifically mentions that schools in Texas were 'ordered open,' ensuring in-person learning options to maintain state funding, aligning with a score of 1 for operational but significantly altered conditions."
+2021-06-04,Texas,C1E_School closing,1,"Schools in Texas were operational with significant differences compared to non-Covid-19 operations as of June 4, 2021. According to the news article from Governor Abbott's office, an executive order prohibited mask mandates starting June 4, but schools followed existing guidelines until that date, supporting a score of 1. Historical data consistently showed schools open with modifications since March 2021."
+2021-07-20,Texas,C1E_School closing,1,"Based on the KXAN article and historical data, schools in Texas were open with significant operational differences due to COVID-19. In-person learning was planned with safety protocols like optional masking and virtual learning options for some grades, aligning with a score of 1."
+2021-07-27,Texas,C1E_School closing,1,"The article from the Waco Tribune-Herald indicates that schools in Texas, such as Midway ISD and Waco ISD, were planning to return to in-person instruction with health protocols like optional masks and encouraged vaccinations, reflecting significant operational differences but not closures. Historical data supports a consistent score of 1 since March 2021, showing schools were operational with significant alterations due to COVID-19."
+2021-08-06,Texas,C1E_School closing,1,"On August 6, 2021, Texas schools were open with significant operational changes according to TEA guidelines, emphasizing in-person learning, limited remote options, and no mandatory contact tracing or mask mandates. Historical data supports a consistent score of 1 since March 2021, indicating schools operational with significant alterations."
+2021-08-11,Texas,C1E_School closing,1,"On August 11, 2021, Texas schools were operational with significant alterations, including mask mandates and other health protocols. This is supported by articles from the Texas Tribune and Travis County Judge Order, as well as consistent historical data since March 2021."
+2021-08-14,Texas,C1E_School closing,1,"Based on historical data and news articles, Texas schools were operational on August 14, 2021, with significant alterations like mask mandates and health protocols. The DCHHS article focused on immunization clinics, and the KSAT article discussed universities' return-to-campus plans with health measures, but no closures."
+2021-08-18,Texas,C1E_School closing,1,"Based on the Texas Tribune article and historical data, schools in Texas were open with significant operational differences, including mask mandate disputes, but not closed. The historical data consistently shows a score of 1 from March to August 2021, indicating schools were operational with alterations."
+2021-08-19,Texas,C1E_School closing,1,"On August 19, 2021, most Texas schools were operational with significant alterations due to COVID-19 safety measures like mask mandates and case notifications. Some rural districts had temporary closures, but these did not reflect a statewide policy change. Historical data consistently shows a score of 1 for operational schools with safety protocols from March to August 2021."
+2021-08-22,Texas,C1E_School closing,1,"On August 22, 2021, Texas schools were operational with significant alterations due to COVID-19, such as optional mask mandates and scaled-back safety measures, as described in the Dallas News article. Historical data consistently shows similar conditions with a score of 1 from March to August 2021."
+2021-08-23,Texas,C1E_School closing,1,"On August 23, 2021, Texas schools were operational with significant alterations such as mask mandates, following a Texas Supreme Court decision. The historical data and KXAN article confirm schools were open with safety measures but no closures, aligning with a score of 1."
+2021-08-27,Texas,C1E_School closing,1,"Based on the Texas Tribune article and historical data, schools in Texas were operational on August 27, 2021, with significant alterations like mask mandates and health protocols due to COVID-19, but not closed statewide. Temporary closures in some rural districts did not reflect a statewide policy change."
+2021-09-03,Texas,C1E_School closing,1,"On September 3, 2021, Texas schools were operational with significant alterations, as reported by the Texas Tribune. At least 45 small school districts implemented temporary closures due to COVID-19, but there was no statewide mandate, allowing local districts to manage their responses. This aligns with a score of 1, reflecting schools open with significant operational differences."
+2021-09-07,Texas,C1E_School closing,1,"On September 7, 2021, Texas schools were operational with significant alterations, such as remote delivery for large classes at Rice University, but not closed statewide. Historical data shows consistent open status with operational changes since early 2021."
+2021-09-10,Texas,C1E_School closing,1,"Based on historical data and the inability to access specific articles for September 10, 2021, Texas schools were operational with significant alterations, including health protocols like mask mandates. This aligns with a score of 1, reflecting that schools were open with significant changes but not closed."
+2021-09-27,Texas,C1E_School closing,1,"Based on the Texas Tribune article from September 17, 2021, and historical data, Texas schools were operational with significant alterations due to COVID-19, such as mask mandates and limited virtual learning options, but not closed. This aligns with a score of 1, reflecting schools open with significant operational differences."
+2021-10-04,Texas,C1E_School closing,1,"On October 4, 2021, Texas schools were operational with significant alterations, such as optional mask mandates and limited virtual learning options, but no statewide closures. This aligns with a score of 1, reflecting schools open with significant operational differences. The Texas Tribune article supports this assessment."
+2021-10-12,Texas,C1E_School closing,1,"Based on guidelines, articles from TEA and CDC, and historical data, Texas schools were operational but with significant modifications like mask mandates, aligning with a score of 1 for schools open with alterations."
+2021-10-25,Texas,C1E_School closing,1,"Based on TEA and CDC guidelines, and historical data, Texas schools were operational but with significant modifications like mask mandates, aligning with a score of 1. No statewide closures were mandated."
+2021-11-01,Texas,C1E_School closing,1,"Based on the TEA and CDC articles, schools in Texas were operational with significant alterations, such as mask mandates, in line with historical data showing consistent open status with modifications since early 2021."
+2021-11-12,Texas,C1E_School closing,1,"On November 12, 2021, Texas schools were operational with significant alterations, such as localized remote learning decisions in the Canutillo Independent School District. This aligns with a score of 1, indicating operational schools with modifications rather than broad closures. The TEA provided guidance for COVID-19 but did not enforce statewide closures, supporting localized decisions."
+2021-11-16,Texas,C1E_School closing,1,"On November 16, 2021, Texas schools were operational with significant alterations, such as localized remote learning decisions in the Canutillo Independent School District. The TEA provided guidance for COVID-19 but did not enforce statewide closures, supporting localized decisions. Historical data consistently shows a score of 1 for operational schools with safety protocols from March to November 2021."
+2021-11-30,Texas,C1E_School closing,1,"On November 30, 2021, Texas schools were operational with significant alterations such as mask mandates and localized remote learning decisions, but not closed statewide. The TEA provided guidance supporting local decisions without enforcing statewide closures. Historical data consistently shows schools were operational with modifications from March to November 2021."
+2021-12-07,Texas,C1E_School closing,1,"On December 7, 2021, Texas schools were operational with significant alterations, such as localized remote learning decisions, in line with the Texas Education Agency's advisory role without enforcing statewide closures. Historical data supports this score with consistent open status and modifications since early 2021."
+2021-12-14,Texas,C1E_School closing,1,"On December 14, 2021, schools in Texas were operational with significant alterations such as mask mandates and localized remote learning decisions, following TEA guidelines. Historical data consistently supported a score of 1, reflecting schools open with modifications since early 2021."
+2022-01-04,Texas,C1E_School closing,1,"On January 4, 2022, Texas schools were operational with significant modifications including mask mandates and localized remote learning decisions, following TEA guidelines. Historical data consistently supported a score of 1, reflecting schools open with modifications since early 2021."
+2022-01-11,Texas,C1E_School closing,1,"On January 11, 2022, Texas schools were operational but with significant modifications due to COVID-19. Closures were localized to specific districts facing staffing shortages, such as Hutto ISD, rather than a statewide mandate. Historical data supports a score of 1, reflecting operational schools with modifications. Articles from TEA and local news confirm this status."
+2022-01-18,Texas,C1E_School closing,1,"On January 18, 2022, schools in Texas were operational with significant modifications according to TEA guidance, which supports local decision-making without enforcing statewide closures. Historical data consistently shows schools open with modifications since March 2021, aligning with a score of 1."
+2022-01-24,Texas,C1E_School closing,2,"On January 24, 2022, several school districts in Central Texas, such as Pflugerville ISD, temporarily closed due to COVID-19 staffing shortages, reflecting partial closures. The TEA guidance supported local decisions without mandating closures, aligning with a score of 2. Historical data shows schools were operational with modifications, not statewide closures."
+2022-01-30,Texas,C1E_School closing,2,"On January 30, 2022, schools in Texas were operational with partial closures due to COVID-19 staffing shortages in specific districts. The TEA supported local decision-making, leading to significant operational changes and temporary closures in some areas. Historical data and the TEA article support a score of 2, indicating partial closures without a statewide mandate."
+2022-02-07,Texas,C1E_School closing,1,"On February 7, 2022, schools in Texas were operational with significant modifications, such as testing and vaccination supports, but not closed. The TEA provided guidelines for safety measures rather than closures. Historical data shows a consistent score of 1 since early 2021, indicating schools open with modifications."
+2022-02-13,Texas,C1E_School closing,1,"On February 13, 2022, schools in Texas were operational with significant modifications due to COVID-19 safety measures such as testing and vaccination supports. The Texas Education Agency provided guidelines for safety measures rather than closures, and historical data shows a consistent score of 1 since early 2021, indicating schools open with modifications."
+2022-02-20,Texas,C1E_School closing,1,"On February 20, 2022, schools in Texas were operational with significant modifications due to COVID-19, such as testing and vaccination supports, but not closed statewide. Historical data shows a consistent score of 1 for operational schools with modifications since early 2021."
+2022-03-01,Texas,C1E_School closing,1,"On March 1, 2022, schools in Texas were operational with significant modifications due to COVID-19, such as testing and vaccination supports, but not closed statewide. The TEA document emphasized resources and guidelines rather than closure mandates. Historical data consistently shows a score of 1 for operational schools with modifications since early 2021."
+2022-03-09,Texas,C1E_School closing,1,"The Texas Education Agency webpage highlights ongoing Covid-19 support and public health orders, indicating schools are operational with health protocols rather than closures. Historical data shows consistent open status with modifications since March 2021, supporting a score of 1."
+2022-03-13,Texas,C1E_School closing,1,"Based on the Texas Education Agency article and historical data, schools in Texas were operational with significant modifications due to COVID-19, including testing and vaccination supports, but not closed statewide. This aligns with a score of 1, indicating schools were open with substantial operational differences from normal operations."
+2022-03-21,Texas,C1E_School closing,1,"Based on the Texas Education Agency article and historical data, schools in Texas were operational with significant modifications due to COVID-19, including testing and vaccination supports, but not closed statewide. This aligns with a score of 1, indicating schools were open with substantial operational differences from normal operations."
+2022-03-28,Texas,C1E_School closing,1,"On March 28, 2022, Texas schools were operational with significant modifications due to COVID-19, including testing and vaccination supports, but not closed statewide. The Texas Education Agency highlighted ongoing COVID-19 support, aligning with a score of 1 for open schools with substantial operational differences."
+2022-04-04,Texas,C1E_School closing,1,"Based on historical data and the Texas Education Agency webpage, schools in Texas were open with significant operational differences due to COVID-19, such as health protocols and testing, but no closures were mandated."
+2022-04-11,Texas,C1E_School closing,1,"On April 11, 2022, based on Texas Education Agency guidelines and historical data, schools in Texas were open with significant operational differences due to COVID-19, such as health protocols and testing, but no closures were mandated. This aligns with a consistent score of 1, reflecting schools open with substantial operational differences."
+2022-05-16,Texas,C1E_School closing,1,"Based on the Texas Education Agency article and historical data, schools in Texas were operational with significant modifications due to COVID-19, such as health protocols and testing, but not closed statewide. This aligns with a score of 1, indicating schools were open with substantial operational differences from normal operations."
+2022-08-31,Texas,C1E_School closing,1,"On August 31, 2022, schools in Texas were operational with significant alterations, including health protocols and potentially mask mandates, reflecting no new widespread closures. This analysis is based on historical data showing consistent operational status with modifications since early 2021, and the lack of specific closure information in the DSHS article."
+2022-10-20,Texas,C1E_School closing,1,"The article from the Texas Department of State Health Services (DSHS) did not provide specific information on school closures or alterations, but historical data shows Texas schools have been operational with significant modifications since early 2021, aligning with a score of 1 for schools open with significant operational differences."

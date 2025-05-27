@@ -16,7 +16,7 @@ def prompt_format(row: pd.Series) -> str:
     prompt = f"Score the policy {row['Policy']}"
     prompt += f" on {row['Date']}"
     prompt += f" for region {row['Region']}"
-    prompt += f" using news articles: {row['source']}"
+    prompt += f" using news articles: {row['Source']}"
     return prompt
 
 
@@ -46,7 +46,7 @@ def run_experiment(data_path: str):
                                               thinking_dir="logs/")
 
     # Clear results file
-    persistence = pd.DataFrame(columns=["Date", "Region", "Policy", "score"])
+    persistence = pd.DataFrame(columns=["Date", "Region", "Policy", "Score", "Notes"])
     persistence.to_csv("data/persistence.csv", index=False, header=True)
 
     # Load data and run experiment on it

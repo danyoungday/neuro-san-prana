@@ -74,17 +74,18 @@ class PersistorReaderTool(CodedTool):
 
         # Filter the DataFrame based on the provided date, region, and policy
         df = pd.read_csv(self.persisted_path)
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
-        filtered_df = df[
-            (df["date"] <= date_parsed) & (df["region"] == region) & (df["policy"] == policy)
-        ]
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        filtered_df = df
+        # filtered_df = df[
+        #     (df["date"] <= date_parsed) & (df["region"] == region) & (df["policy"] == policy)
+        # ]
 
         # Parse each row into the string we're going to return to the LLM
         response = ""
         n_rows = 0
         filtered_df = filtered_df.astype(str)
         for _, row in filtered_df.iterrows():
-            response += f"date:{row['date']}, region:{row['region']}, policy:{row['policy']}, score:{row['score']}\n"  # noqa: E501
+            response += f"date:{row['Date']}, Region:{row['Region']}, Policy:{row['Policy']}, Score:{row['Score']}, Notes:{row['Notes']}\n"  # noqa: E501
             n_rows += 1
 
         print(f"---------------- Found {n_rows} rows ----------------")
