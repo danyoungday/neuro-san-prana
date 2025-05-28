@@ -82,7 +82,7 @@ class PersistorWriterTool(CodedTool):
             "Region": [region],
             "Policy": [policy],
             "Score": [score],
-            "Notes": [notes]
+            "Notes": [notes.replace("\n", " ")]
         })
 
         # Append the new row to the existing DataFrame
@@ -90,6 +90,8 @@ class PersistorWriterTool(CodedTool):
             new_row.to_csv(self.persisted_path, mode="a", header=False, index=False)
         except Exception as e:
             return f"Error: Failed to write to file {self.persisted_path}: {e}"
+
+        print(">>>>>>>>>>>>> Data written successfully >>>>>>>>>>>>>>>")
 
         return "Success: Data written to file."
 

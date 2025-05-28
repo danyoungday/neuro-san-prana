@@ -2,6 +2,7 @@
 Runs the experiment to generate a dataset using prana
 """
 import os
+import shutil
 
 from neuro_san.client.agent_session_factory import AgentSessionFactory
 from neuro_san.client.streaming_input_processor import StreamingInputProcessor
@@ -20,16 +21,25 @@ def prompt_format(row: pd.Series) -> str:
     return prompt
 
 
-def run_experiment(data_path: str):
+def run_experiment(data_path: str, log_dir: str, force: bool = False):
     """
     Runs the experiment generating a dataset using PRANA.
     """
     # Check if the persistence file exists
     if os.path.exists("data/persistence.csv"):
         inp = input("Persistence file exists. Do you want to overwrite? (y/n):")
-        if inp.lower() != "y":
+        if inp.lower() != "y" and not force:
             print("Exiting...")
             return
+
+    # Check if the log directory exists
+    if os.path.exists(log_dir):
+        inp = input(f"Log directory {log_dir} exists. Do you want to overwrite? (y/n):")
+        if inp.lower() != "y" and not force:
+            print("Exiting...")
+            return
+        shutil.rmtree(log_dir)
+    os.makedirs(log_dir)
 
     # Set up the neuro-san stuff
     factory = AgentSessionFactory()
@@ -41,9 +51,8 @@ def run_experiment(data_path: str):
                                      metadata={})
 
     input_processor = StreamingInputProcessor(default_input="DEFAULT",
-                                              thinking_file="thinking.txt",
                                               session=session,
-                                              thinking_dir="logs/")
+                                              thinking_dir=log_dir)
 
     # Clear results file
     persistence = pd.DataFrame(columns=["Date", "Region", "Policy", "Score", "Notes"])
@@ -51,7 +60,7 @@ def run_experiment(data_path: str):
 
     # Load data and run experiment on it
     df = pd.read_csv(data_path)
-    for i, row in tqdm(df.iterrows(), desc="Processing rows", total=len(df)):
+    for _, row in tqdm(df.iterrows(), desc="Processing rows", total=len(df)):
         prompt = prompt_format(row)
 
         state = {
@@ -66,6 +75,10 @@ def run_experiment(data_path: str):
 
         input_processor.process_once(state)
 
+    shutil.copy2("data/persistence.csv", os.path.join(log_dir, "persistence.csv"))
+
 
 if __name__ == "__main__":
-    run_experiment("data/texas.csv")
+    # run_experiment("data/texas-smaller.csv", "logs/temp")
+    for i in range(10):
+        run_experiment("data/texas-smaller.csv", f"logs/repeated/repeat-{i}", force=True)

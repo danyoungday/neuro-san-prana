@@ -88,7 +88,7 @@ You will be asked to score the level of policy on a given date in a given region
 Before you do anything, first find relevant historical data from the archive by calling the PersistorReaderTool.
 DO NOT call the news_analyzer tool until you have attempted to retrieve historical data. If no historical data is found, continue with the news_analyzer tool and pass "no historical data found" in the historical_data parameter.
 Then you will analyze the article, using the news_analyzer to compute a score for the policy.
-Once you have computed the score, ask the PersistorWriterTool to save the new data to archive. Give it the relevant information.
+Once you have computed the score, use the PersistorWriterTool to save the new data to archive. Give it the relevant information.
 For the notes field, provide a one or two sentence summary for each article explaining how it was used to determine the score.
 Finally, return your output to the user nicely. Start with a sentence summary of the score, then provide your reasoning. Format the output nicely in markdown.
 """,

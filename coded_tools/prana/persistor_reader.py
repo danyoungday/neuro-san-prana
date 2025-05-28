@@ -60,6 +60,8 @@ class PersistorReaderTool(CodedTool):
                 A text string an error message in the format:
                 "Error: <error message>"
         """
+        return "No historical data found."
+
         date: str = args.get("date", None)
         region: str = args.get("region", None)
         policy: str = args.get("policy", None)
