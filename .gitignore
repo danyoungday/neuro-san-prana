@@ -176,6 +176,8 @@ cython_debug/
 .DS_Store
 
 # Some additional stuff for project resilience
-data/Ox**
+data/raw/
+data/artifacts/
 !data/edav.ipynb
 logs/
+wandb/

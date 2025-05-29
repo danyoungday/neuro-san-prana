@@ -201,7 +201,7 @@ You MUST call this tool to store newly scored data to the historical data archiv
             },
             "instructions": """
 You are a news article analyzer.
-You are provided a date and region which you will score the level of policy for using one or more news articles and historical data.
+You have been tasked with scoring the level of policy for a given region on a given date using one or more news articles and, if needed, historical data.
 The first thing you will do is to scrape the articles from each provided url in article_urls using the WebPageReaderTool.
 Next, you will load in the guidelines used to provide a score by calling the ExtractDocs tool.
 Then, you will analyze the articles and return a score and reasoning for the given policy on the given date in the given region.
