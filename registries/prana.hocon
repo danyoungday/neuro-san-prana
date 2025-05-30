@@ -85,14 +85,50 @@ Give me a date, region, policy, and news article URLs and I will provide you wit
             "instructions": """
 You are the scorer of policies.
 You will be asked to score the level of policy on a given date in a given region using one or more news articles passed in by the user.
-Before you do anything, first find relevant historical data from the archive by calling the PersistorReaderTool.
+Before you do anything, first find relevant historical data from the archive by calling the historian.
 DO NOT call the news_analyzer tool until you have attempted to retrieve historical data. If no historical data is found, continue with the news_analyzer tool and pass "no historical data found" in the historical_data parameter.
 Then you will analyze the article, using the news_analyzer to compute a score for the policy.
 Once you have computed the score, use the PersistorWriterTool to save the new data to archive. Give it the relevant information.
-For the notes field, provide a one or two sentence summary for each article explaining how it was used to determine the score.
+For the notes field, provide a one or two sentence summary for each article explaining how it was used to determine the score. Make sure to include which specific sub-region of the region the article is relevant to, if applicable.
 Finally, return your output to the user nicely. Start with a sentence summary of the score, then provide your reasoning. Format the output nicely in markdown.
 """,
-            "tools": ["PersistorReaderTool", "PersistorWriterTool", "news_analyzer"]
+            "tools": ["historian", "PersistorWriterTool", "news_analyzer"]
+        },
+        # HISTORIAN
+        {
+            "name": "historian",
+            "function": {
+                "description": "Returns relevant historical data from the archive for a given date, region, and policy. Then summarizes the data for each sub-region of the given region.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "description": "A string containing the date to score the level of policy on."
+                        },
+                        "region": {
+                            "type": "string",
+                            "description": "A string containing the region to score the policy for."
+                        },
+                        "policy": {
+                            "type": "string",
+                            "description": "The policy whos level should be measured for the given date and region using the article and historical data."
+                        },
+                    },
+                    "required": ["date", "region", "policy"]
+                }
+            },
+            "instructions": """
+You are a historian.
+You have been tasked with retrieving relevant historical data from the archive for a given date, region, and policy.
+You will first call the PersistorReaderTool to retrieve the archive of historical data. This will return scores for the given policy and region before the given date, along with notes for each score.
+Then you will summarize the historical data to be used by the news_analyzer.
+You will find the most up to date notes for the policy in each sub-region of the given region. For example, if the region is the United States, you will find the most up to date notes for the policy in each state you can find in the historical data.
+Do not include the numeric score in your summary, just notes and rationale for each of the sub-regions you can find.
+Summarize your findings into a few sentences.
+""",
+            "tools": [PersistorReaderTool]
+            "command": "Retrieve relevant historical data from the archive for a given date, region, and policy. Then summarize data for each sub-region of the given region and return it.",
         },
         # PERSISTOR READER TOOL
         {
@@ -205,11 +241,12 @@ You have been tasked with scoring the level of policy for a given region on a gi
 The first thing you will do is to scrape the articles from each provided url in article_urls using the WebPageReaderTool.
 Next, you will load in the guidelines used to provide a score by calling the ExtractDocs tool.
 Then, you will analyze the articles and return a score and reasoning for the given policy on the given date in the given region.
-You will do so based on the guidelines. The news articles and guidelines should be your primary source to determine the score. The historical data is secondary and should only be used to supplement the news articles.
+You will do so based on the guidelines. Given your historical knowledge of the situation, use the guidelines and the news article to update your belief of what the policy level should be in the whole region on the given date.
 Do not reason with your own internal knowledge unless you cannot assign a score otherwise. If you do use internal knowledge, make sure to say so in your reasoning.
-Your score should represent the policy level that applies to a resident in the region on the date, regardless of which level of government set the policy. For example, observations for New South Wales describe the policies that apply to people in the state of New South Wales, regardless of whether the policy comes from the state government, the federal Australian government, or even the city of Sydney.
 When you assign your score, do so FOR THE GIVEN DATE AND REGION. If the articles contain information about the policy for a different date or region, you should take it into account, but remember your final score is ON THE DATE AND REGION PASSED IN.
-For example, if an article says a policy will take effect in November 2022, but the date you are scoring is in October 2022, you should not assign a score based on the future policy. Or if an article is for India but the region you are scoring is the US, you should not assign a score based on the Indian policy. Or if an article is for New South Wales but the region you are scoring is Australia, you should take into account the New South Wales policy, but remember your final score is for the whole of Australia.
+    For example, if an article says a policy will take effect in November 2022, but the date you are scoring is in October 2022, you should not assign a score based on the future policy.
+    Or if an article is for India but the region you are scoring is the United States, you should not assign a score based on the Indian policy.
+    Or if an article is for Texas but the region you are scoring is the United States, you should take into account the Texas policy, but remember you are scoring for the United States as a whole.
 Your reasoning in regards to the news articles should be separated by article such that the user knows your reasoning process for each article.
 You will explain your reasoning for the score you give in relation to the guidelines and each news article. Only mention the historical data if it is relevant to the score you give.
 Your output will be the score followed by your full reasoning. Return your reasoning for each step in the process.

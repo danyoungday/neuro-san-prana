@@ -120,15 +120,16 @@ def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force
     # Copy results file to log directory locally
     shutil.copy2("data/persistence.csv", os.path.join(log_dir, "persistence.csv"))
 
+    run.finish()
 
 if __name__ == "__main__":
-    # run_experiment(wandb_data_path="uk-dataset:latest/uk-dataset.csv",
-    #                log_dir="logs/mini-updated-prompt",
-    #                wandb_params={"project": "prana", "name": "mini-updated-prompt"},
-    #                force=True)
+    run_experiment(wandb_data_path="england-dataset:latest/england-dataset.csv",
+                   log_dir="logs/england",
+                   wandb_params={"project": "prana", "name": "england"},
+                   force=True)
 
-    for i in range(10):
-        run_experiment(wandb_data_path="uk-dataset:latest/uk-dataset.csv",
-                       log_dir=f"logs/mini-repeat-{i}",
-                       wandb_params={"project": "prana", "name": f"mini-repeat-{i}"},
-                       force=True)
+    # for i in range(10):
+    #     run_experiment(wandb_data_path="uk-dataset:latest/uk-dataset.csv",
+    #                    log_dir=f"logs/mini-historian-repeat-{i}",
+    #                    wandb_params={"project": "prana", "name": f"mini-historian-repeat-{i}"},
+    #                    force=True)

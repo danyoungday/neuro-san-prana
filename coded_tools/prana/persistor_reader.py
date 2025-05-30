@@ -60,8 +60,6 @@ class PersistorReaderTool(CodedTool):
                 A text string an error message in the format:
                 "Error: <error message>"
         """
-        return "No historical data found."
-
         date: str = args.get("date", None)
         region: str = args.get("region", None)
         policy: str = args.get("policy", None)
@@ -78,6 +76,8 @@ class PersistorReaderTool(CodedTool):
         df = pd.read_csv(self.persisted_path)
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
         filtered_df = df
+        # TODO: This is commented out because right now all our data is relevant so we can retrieve it all without the
+        # point of failure of not filtering right.
         # filtered_df = df[
         #     (df["date"] <= date_parsed) & (df["region"] == region) & (df["policy"] == policy)
         # ]
