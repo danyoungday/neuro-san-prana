@@ -51,5 +51,5 @@ class ExtractDocs(CodedTool):
                 A text string error message in the format:
                 "Error: <error message>"
         """
-        with open(os.path.join(self.docs_path, "shortened.md"), "r", encoding="utf-8") as f:
+        with open(os.path.join(self.docs_path, "shortened-daniel.md"), "r", encoding="utf-8") as f:
             return f.read()

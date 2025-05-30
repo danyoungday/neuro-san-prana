@@ -122,14 +122,13 @@ def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force
 
 
 if __name__ == "__main__":
-    run_experiment(wandb_data_path="uk-dataset:latest/uk-dataset.csv",
-                   log_dir="logs/uk-first-run",
-                   wandb_params={"project": "prana", "name": "uk-first-run"},
-                   force=True)
+    # run_experiment(wandb_data_path="uk-dataset:latest/uk-dataset.csv",
+    #                log_dir="logs/mini-updated-prompt",
+    #                wandb_params={"project": "prana", "name": "mini-updated-prompt"},
+    #                force=True)
 
-    # for i in range(10):
-    #     wandb_params = {
-    #         "project": "prana",
-    #         "name": f"test-repeat-{i}"
-    #     }
-    #     run_experiment("data/texas-smaller.csv", f"logs/repeated/repeat-{i}", wandb_params, force=True)
+    for i in range(10):
+        run_experiment(wandb_data_path="uk-dataset:latest/uk-dataset.csv",
+                       log_dir=f"logs/mini-repeat-{i}",
+                       wandb_params={"project": "prana", "name": f"mini-repeat-{i}"},
+                       force=True)

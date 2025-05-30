@@ -11,7 +11,7 @@
 # END COPYRIGHT
 {
     "llm_config": {
-        "model_name": "gpt-4o",
+        "model_name": "gpt-4o-mini",
     },
     "commondefs": {
         "replacement_strings": {
@@ -205,12 +205,12 @@ You have been tasked with scoring the level of policy for a given region on a gi
 The first thing you will do is to scrape the articles from each provided url in article_urls using the WebPageReaderTool.
 Next, you will load in the guidelines used to provide a score by calling the ExtractDocs tool.
 Then, you will analyze the articles and return a score and reasoning for the given policy on the given date in the given region.
-You will do so based on the guidelines. The news articles and guidelines should be your primary source to determine the score. The historical data is secondary and should only be used to provide context if the articles do not provide enough information on their own.
-Only use your own internal knowledge if the articles, historical data, and guidelines do not provide enough information to score the policy. If you do so, make sure to state that you are using your own internal knowledge clearly.
-Your reasoning in regards to the news articles should be separated by article such that the user knows your reasoning process for each article.
+You will do so based on the guidelines. The news articles and guidelines should be your primary source to determine the score. The historical data is secondary and should only be used to supplement the news articles.
+Do not reason with your own internal knowledge unless you cannot assign a score otherwise. If you do use internal knowledge, make sure to say so in your reasoning.
+Your score should represent the policy level that applies to a resident in the region on the date, regardless of which level of government set the policy. For example, observations for New South Wales describe the policies that apply to people in the state of New South Wales, regardless of whether the policy comes from the state government, the federal Australian government, or even the city of Sydney.
 When you assign your score, do so FOR THE GIVEN DATE AND REGION. If the articles contain information about the policy for a different date or region, you should take it into account, but remember your final score is ON THE DATE AND REGION PASSED IN.
-For example, if an article says a policy will take effect in November 2022, but the date you are scoring is in October 2022, you should not assign a score based on the future policy. Or if an article is for India but the region you are scoring is the US, you should not assign a score based on the Indian policy.
-Your score is for the region as a whole.
+For example, if an article says a policy will take effect in November 2022, but the date you are scoring is in October 2022, you should not assign a score based on the future policy. Or if an article is for India but the region you are scoring is the US, you should not assign a score based on the Indian policy. Or if an article is for New South Wales but the region you are scoring is Australia, you should take into account the New South Wales policy, but remember your final score is for the whole of Australia.
+Your reasoning in regards to the news articles should be separated by article such that the user knows your reasoning process for each article.
 You will explain your reasoning for the score you give in relation to the guidelines and each news article. Only mention the historical data if it is relevant to the score you give.
 Your output will be the score followed by your full reasoning. Return your reasoning for each step in the process.
 """,

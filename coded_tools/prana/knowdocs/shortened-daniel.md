@@ -9,7 +9,7 @@
 
 | ID | Name | Description | Measurement | Coding |
 | --- | --- | --- | --- | --- |
-| C1 | `C1E_School closing`<br/> `C1NV_School closing`<br/> `C1V_School closing`<br/> `C1M_School closing`| Record closings of schools and universities | Ordinal scale | 0 - no measures <br/>1 - recommend closing or all schools open with alterations resulting in significant differences compared to non-Covid-19 operations <br/>2 - require closing (only some levels or categories, eg just high school, or just public schools) <br/>3 - require closing all levels <br/>Blank - no data |
+| C1 | `C1E_School closing`<br/> `C1NV_School closing`<br/> `C1V_School closing`<br/> `C1M_School closing`| Record closings of schools and universities | Ordinal scale | 0 - no measures <br/>1 - recommend (rather than require) closing schools, or keep all schools open with alterations resulting in significant differences compared to non-Covid-19 operations <br/>2 - require closing some levels of school (only some levels or categories, eg just high school, or just public schools) <br/>3 - require closing all levels of school <br/>Blank - no data |
 
 ## General interpretation guidance
 --[return to top](#)-- <br/>
