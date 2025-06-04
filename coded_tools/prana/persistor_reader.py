@@ -7,6 +7,7 @@
 # Purchase of a commercial license is mandatory for any use of the
 # neuro-san-demos SDK Software in commercial settings.
 #
+import json
 from typing import Any
 from typing import Dict
 from typing import Union
@@ -76,31 +77,37 @@ class PersistorReaderTool(CodedTool):
         df = pd.read_csv(self.persisted_path)
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
         filtered_df = df
+        if len(filtered_df) >= 3:
+            filtered_df = filtered_df.iloc[-3:]
         # TODO: This is commented out because right now all our data is relevant so we can retrieve it all without the
         # point of failure of not filtering right.
         # filtered_df = df[
         #     (df["date"] <= date_parsed) & (df["region"] == region) & (df["policy"] == policy)
         # ]
 
-        # Parse each row into the string we're going to return to the LLM
-        response = ""
-        n_rows = 0
-        filtered_df = filtered_df.astype(str)
-        for _, row in filtered_df.iterrows():
-            response += f"date:{row['Date']}, Region:{row['Region']}, Policy:{row['Policy']}, Score:{row['Score']}, Notes:{row['Notes']}\n"  # noqa: E501
-            n_rows += 1
+        print(f"---------------- Found {len(filtered_df)} rows ----------------")
 
-        print(f"---------------- Found {n_rows} rows ----------------")
-
-        # If no rows were found, return a string saying so
-        if response == "":
+        if len(filtered_df) == 0:
             return f"No data found for date {date}, region {region}, policy {policy}."
 
-        # Return the response string
-        return response.strip()
+        # Return a JSON formatted string
+        filtered_df = filtered_df.astype(str)
+        json_formatted = {"region": region, "policy": policy, "historical_data": []}
+        for _, row in filtered_df.iterrows():
+            json_formatted["historical_data"].append({
+                "date": row["Date"],
+                "score": row["Score"],
+                "notes": row["Notes"]
+            })
+        return json.dumps(json_formatted, indent=4)
 
     async def async_invoke(self, args: Dict[str, Any], sly_data: Dict[str, Any]) -> str:
         """
         Delegates to the synchronous invoke method for now.
         """
         return self.invoke(args, sly_data)
+
+
+if __name__ == "__main__":
+    tool = PersistorReaderTool()
+    print(tool.invoke({"date": "", "region": "", "policy": ""}, {}))
