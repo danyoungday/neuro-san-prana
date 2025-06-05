@@ -124,8 +124,8 @@ def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force
 
 if __name__ == "__main__":
     run_experiment(wandb_data_path="england-dataset:latest/england-dataset.csv",
-                   log_dir="logs/split-validator",
-                   wandb_params={"project": "prana", "name": "split-validator"},
+                   log_dir="logs/four-one",
+                   wandb_params={"project": "prana", "name": "four-one"},
                    force=True)
 
     # for i in range(10):

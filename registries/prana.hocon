@@ -11,7 +11,7 @@
 # END COPYRIGHT
 {
     "llm_config": {
-        "model_name": "gpt-4o-mini",
+        "model_name": "gpt-4.1",
     },
     "commondefs": {
         "replacement_strings": {
@@ -101,9 +101,9 @@ Explicitly follow these steps. Do not skip any steps and do not return your fina
         - Use the detailed interpretation guidance section for the specific policy.
         - Cite specific parts of the guidelines that support your reasoning.
             - If you are providing a score of 0 or 1, explain how your score follows the "Delineating between policy levels 0 and 1" section of the OxCGRT guidelines.
-    - Use the historical policy summary as context to inform your analysis, using the news articles to determine if the policy has changed from the last known score.
+    - Use the historical policy summary as context to inform your analysis, using the news articles to determine if the policy has changed from the previous score.
     - Provide an explicit confidence level (high, medium, low) for your score. Clearly state any encountered ambiguity and how it impacts your scoring
-    - Explicitly state any internal knowledge used clearly in your reasoning.
+    - Do NOT use any internal knowledge of events that happened after the date you are scoring. Mention whenever you use any internal knowledge.
 
 5. Validation with Guidelines:
     - After assigning your initial score and providing your reasoning, send your proposed score and reasoning to the validator_coordinator tool.
@@ -115,7 +115,8 @@ Explicitly follow these steps. Do not skip any steps and do not return your fina
         - Repeat this validation step until the validator explitly approves your score.
 
 6. Record Score
-    - Call the PersistorWriterTool to store your results in the archive. Provide it with the date, region, policy, score, and a brief one or two sentence summary of your reasoning in relation to the articles' contents and historical data.
+    - Call the PersistorWriterTool to store your results in the archive.
+        - Provide it with the date, region, policy, score, and a brief one or two sentence summary of your reasoning, citing specific sections of articles, guidelines, or historical context that support your score.
     - If you did not pass the validation process, make sure to note that in the summary.
 
 Do NOT return your final score and reasoning until you have completed all 6 of these steps.
