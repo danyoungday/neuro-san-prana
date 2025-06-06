@@ -123,13 +123,13 @@ def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force
     run.finish()
 
 if __name__ == "__main__":
-    run_experiment(wandb_data_path="england-dataset:latest/england-dataset.csv",
-                   log_dir="logs/four-one",
-                   wandb_params={"project": "prana", "name": "four-one"},
-                   force=True)
+    # run_experiment(wandb_data_path="england-dataset:latest/england-dataset.csv",
+    #                log_dir="logs/four-one",
+    #                wandb_params={"project": "prana", "name": "four-one"},
+    #                force=True)
 
-    # for i in range(10):
-    #     run_experiment(wandb_data_path="uk-dataset:latest/uk-dataset.csv",
-    #                    log_dir=f"logs/mini-historian-repeat-{i}",
-    #                    wandb_params={"project": "prana", "name": f"mini-historian-repeat-{i}"},
-    #                    force=True)
+    for i in range(10):
+        run_experiment(wandb_data_path="england-dataset:latest/england-dataset.csv",
+                       log_dir=f"logs/four-one-repeat-{i}",
+                       wandb_params={"project": "prana", "name": f"four-one-repeat-{i}"},
+                       force=True)
