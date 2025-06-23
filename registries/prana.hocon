@@ -105,21 +105,11 @@ Explicitly follow these steps. Do not skip any steps and do not return your fina
     - Provide an explicit confidence level (high, medium, low) for your score. Clearly state any encountered ambiguity and how it impacts your scoring
     - Do NOT use any internal knowledge of events that happened after the date you are scoring. Mention whenever you use any internal knowledge.
 
-5. Validation with Guidelines:
-    - After assigning your initial score and providing your reasoning, send your proposed score and reasoning to the validator_coordinator tool.
-    - If the validator approves your score, you may proceed to the next step
-    - If the validator raises concerns or requests clarifications:
-        - Address the validator's feedback explicitly. For example: "The validator noted that there should be a more detailed explanation so I will clarify my reasoning here: ..."
-        - Revise your analysis or justify your reasoning more clearly. Make sure to cite specific parts of the article, guidelines, or historical context that support your score.
-        - DO NOT just make up reasoning to satisfy the validator.
-        - Repeat this validation step until the validator explitly approves your score.
-
-6. Record Score
+5. Record Score
     - Call the PersistorWriterTool to store your results in the archive.
         - Provide it with the date, region, policy, score, and a brief one or two sentence summary of your reasoning, citing specific sections of articles, guidelines, or historical context that support your score.
-    - If you did not pass the validation process, make sure to note that in the summary.
 
-Do NOT return your final score and reasoning until you have completed all 6 of these steps.
+Do NOT return your final score and reasoning until you have completed all 5 of these steps.
 """,
             "tools": ["historian", "ExtractDocs", "WebPageReaderTool", "PersistorWriterTool", "validator_coordinator"]
         },
@@ -257,72 +247,72 @@ You MUST call this tool to scrape a specified news article.
             "class": "webpage_reader.WebPageReaderTool",
         },
         # VALIDATOR COORDINATOR
-        {
-            "name": "validator_coordinator",
-            "function": {
-                "description": "Validates the proposed score and reasoning using its tools, then returns the final validation result.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "reasoning": {
-                            "type": "string",
-                            "description": "A string containing the score and reasoning produced by the news analyst."
-                        }
-                    },
-                    "required": ["reasoning"]
-                }
-            },
-            "instructions": """
-You are a validation coordinator. You will read in the score and reasoning from the news analyst and then call all your validator tools to provide their validation of the score and reasoning.
-Then you will compile their responses and return the final validation result. Only approve the scoring if ALL your validators approve it.
-You will do so with the following format:
-    ### Validation Result:
-        - **Final Decision:** [Approved or Needs Revision]
-        - **Validation Results:**
-            - **[Validator Name]:**
-                - **Decision:** [Approved or Needs Revision]
-                - **Feedback:** [Detailed validation feedback referencing specific parts of the guidelines that support the validation]
-""",
-            "tools": ["guideline_validator"],
-            "command": "Validate the proposed score and reasoning using each one of your validator tools. Compile their responses and only approve the scoring if ALL your validators approve it.",
-        },
-        # GUIDELINE VALIDATOR
-        {
-            "name": "guideline_validator",
-            "function": {
-                "description": "Validates the proposed score and reasoning against the OxCGRT guidelines",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "reasoning": {
-                            "type": "string",
-                            "description": "A string containing the score and reasoning produced by the news analyst."
-                        }
-                    },
-                    "required": ["reasoning"]
-                }
-            },
-            "instructions": """
-You are the guideline validator. Your responsibility is to rigorously verify and validate the policy scores and associated reasoning provided by the news analyst, ensuring strict adherence to the official OxCGRT scoring guidelines.
-Follow these steps explicitly:
+//         {
+//             "name": "validator_coordinator",
+//             "function": {
+//                 "description": "Validates the proposed score and reasoning using its tools, then returns the final validation result.",
+//                 "parameters": {
+//                     "type": "object",
+//                     "properties": {
+//                         "reasoning": {
+//                             "type": "string",
+//                             "description": "A string containing the score and reasoning produced by the news analyst."
+//                         }
+//                     },
+//                     "required": ["reasoning"]
+//                 }
+//             },
+//             "instructions": """
+// You are a validation coordinator. You will read in the score and reasoning from the news analyst and then call all your validator tools to provide their validation of the score and reasoning.
+// Then you will compile their responses and return the final validation result. Only approve the scoring if ALL your validators approve it.
+// You will do so with the following format:
+//     ### Validation Result:
+//         - **Final Decision:** [Approved or Needs Revision]
+//         - **Validation Results:**
+//             - **[Validator Name]:**
+//                 - **Decision:** [Approved or Needs Revision]
+//                 - **Feedback:** [Detailed validation feedback referencing specific parts of the guidelines that support the validation]
+// """,
+//             "tools": ["guideline_validator"],
+//             "command": "Validate the proposed score and reasoning using each one of your validator tools. Compile their responses and only approve the scoring if ALL your validators approve it.",
+//         },
+//         # GUIDELINE VALIDATOR
+//         {
+//             "name": "guideline_validator",
+//             "function": {
+//                 "description": "Validates the proposed score and reasoning against the OxCGRT guidelines",
+//                 "parameters": {
+//                     "type": "object",
+//                     "properties": {
+//                         "reasoning": {
+//                             "type": "string",
+//                             "description": "A string containing the score and reasoning produced by the news analyst."
+//                         }
+//                     },
+//                     "required": ["reasoning"]
+//                 }
+//             },
+//             "instructions": """
+// You are the guideline validator. Your responsibility is to rigorously verify and validate the policy scores and associated reasoning provided by the news analyst, ensuring strict adherence to the official OxCGRT scoring guidelines.
+// Follow these steps explicitly:
 
-1. Read OxCGRT Guidelines with the ExtractDocs tool
+// 1. Read OxCGRT Guidelines with the ExtractDocs tool
 
-2. Validate Reasoning and Scoring Alignment
-    - Ensure each step of the reasoning aligns with the official OxCGRT scoring guidelines. If any part of the reasoning does not align with the guidelines, you must request clarifications or revisions.
-    - Here are some examples of discrepancies you may see:
-        - The numeric score given is different from what should be given based on the reasoning and guidelines table of scores.
-            - Example: "Schools are open but with mandatory COVID-19 testing which aligns with a score of 0." According to the "Delineating between policy levels 0 and 1" section of the guidelines, this should be a score of 1 because schools are open with restrictions.
-        - The reasoning does not clearly explain how the score was derived from the news articles and the OxCGRT guidelines.
+// 2. Validate Reasoning and Scoring Alignment
+//     - Ensure each step of the reasoning aligns with the official OxCGRT scoring guidelines. If any part of the reasoning does not align with the guidelines, you must request clarifications or revisions.
+//     - Here are some examples of discrepancies you may see:
+//         - The numeric score given is different from what should be given based on the reasoning and guidelines table of scores.
+//             - Example: "Schools are open but with mandatory COVID-19 testing which aligns with a score of 0." According to the "Delineating between policy levels 0 and 1" section of the guidelines, this should be a score of 1 because schools are open with restrictions.
+//         - The reasoning does not clearly explain how the score was derived from the news articles and the OxCGRT guidelines.
 
-3. Format your feedback with the following format:
-    ### Guideline Validation Result:
-        - **Decision:** [Approved or Needs Revision]
-        - **Feedback:** [Your detailed validation feedback, making sure to reference specific parts of the guidelines that support your validation]
-""",
-            "tools": [ExtractDocs],
-            "command": "Validate the proposed score and reasoning against the guidelines. Ensure strict adherence to the official scoring guidelines and provide feedback, either approving the score or requesting clarifications.",
-        },
+// 3. Format your feedback with the following format:
+//     ### Guideline Validation Result:
+//         - **Decision:** [Approved or Needs Revision]
+//         - **Feedback:** [Your detailed validation feedback, making sure to reference specific parts of the guidelines that support your validation]
+// """,
+//             "tools": [ExtractDocs],
+//             "command": "Validate the proposed score and reasoning against the guidelines. Ensure strict adherence to the official scoring guidelines and provide feedback, either approving the score or requesting clarifications.",
+//         },
         # PERSISTOR WRITER TOOL
         {
             "name": "PersistorWriterTool",

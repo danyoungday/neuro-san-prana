@@ -28,10 +28,11 @@ In order to run the experiment, you will need to set other environment variables
 export PYTHONPATH=$PWD
 export AGENT_MANIFEST_FILE="./registries/manifest.hocon"
 export AGENT_MANIFEST_UPDATE_PERIOD_SECONDS=5
-export AGENT_TOOL_PATH="./coded_tools
+export AGENT_TOOL_PATH="./coded_tools"
 ```
 
 Then run with:
 ```bash
+python -m neuro_san.service.agent_main_loop
 python -m experiment
 ```

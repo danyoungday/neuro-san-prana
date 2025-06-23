@@ -1,0 +1,3 @@
+# Toy config file
+name: temp
+wandb_data_path: england-dataset:latest/england-dataset.csv
