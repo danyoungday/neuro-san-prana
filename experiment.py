@@ -10,6 +10,7 @@ import pandas as pd
 from tqdm import tqdm
 import wandb
 from wandb.sdk.wandb_run import Run
+import yaml
 
 
 PERSISTENCE_FILE_PATH = "data/persistence.csv"
@@ -24,11 +25,6 @@ def prompt_format(row: pd.Series) -> str:
     prompt += f" on {row['Date']}"
     prompt += f" for region {row['Region']}"
     prompt += f" using news articles: {row['Source']}"
-    return prompt
-
-
-def prompt_format_multi(row: pd.Series) -> str:
-    prompt = f"Score policies on {row['Date']} for region {row['Region']} using news articles: {row['Source']}"
     return prompt
 
 
@@ -188,7 +184,7 @@ def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force
     data_dir = artifacts_dict["data"].download(root=f"data/artifacts/{wandb_data_path.split('/')[0]}")
     df = pd.read_csv(os.path.join(data_dir, wandb_data_path.split("/")[1]))
     for _, row in tqdm(df.iterrows(), desc="Processing rows", total=len(df)):
-        prompt = prompt_format_multi(row)
+        prompt = prompt_format(row)
 
         state = {
             "last_chat_response": None,
@@ -209,8 +205,9 @@ def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force
 
 
 if __name__ == "__main__":
-    name = "multi"
-    run_experiment(wandb_data_path="england-dataset:latest/england-multi-dataset.csv",
-                   log_dir=f"logs/{name}",
-                   wandb_params={"project": "prana", "name": name},
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+    run_experiment(wandb_data_path=config['wandb_data_path'],
+                   log_dir=f"logs/{config['name']}",
+                   wandb_params={"project": "prana", "name": config['name']},
                    force=True)

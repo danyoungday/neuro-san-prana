@@ -63,8 +63,9 @@ class PersistorReaderTool(CodedTool):
         """
         date: str = args.get("date", None)
         region: str = args.get("region", None)
-        if date is None or region is None:
-            return "Error: No date or region provided."
+        policy: str = args.get("policy", None)
+        if date is None or region is None or policy is None:
+            return "Error: No date, region, or policy provided."
 
         # Parse date to datetime object
         try:
@@ -75,39 +76,29 @@ class PersistorReaderTool(CodedTool):
         # Filter the DataFrame based on the provided date, region, and policy
         df = pd.read_csv(self.persisted_path)
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        filtered_df = df
+        if len(filtered_df) >= 3:
+            filtered_df = filtered_df.iloc[-3:]
+        # TODO: This is commented out because right now all our data is relevant so we can retrieve it all without the
+        # point of failure of not filtering right.
+        # filtered_df = df[
+        #     (df["date"] <= date_parsed) & (df["region"] == region) & (df["policy"] == policy)
+        # ]
 
-        json_formatted = {"region": region}
-        found = False
-        for policy in df["Policy"].unique():
-            # Filter by policy
-            filtered_df = df[df["Policy"] == policy]
-            filtered_df = filtered_df.astype(str)
+        print(f"---------------- Found {len(filtered_df)} rows ----------------")
 
-            # Subset to latest 3 entries
-            if len(filtered_df) >= 3:
-                filtered_df = filtered_df.iloc[-3:]
-
-            if len(filtered_df) >= 1:
-                found = True
-
-            # Format into JSON
-            json_formatted[policy] = []
-            for _, row in filtered_df.iterrows():
-                json_formatted[policy].append({
-                    "date": row["Date"],
-                    "score": row["Score"],
-                    "notes": row["Notes"]
-                })
-
-            if len(filtered_df) == 0:
-                print(f"No data found for date {date}, region {region}, policy {policy}.")
-            else:
-                print(f"------------ Found {len(filtered_df)} entries for date {date}, region {region}, policy {policy} ------------")  # noqa
-
-        if not found:
-            print(f"No data found for date {date}, region {region}.")
+        if len(filtered_df) == 0:
+            return f"No data found for date {date}, region {region}, policy {policy}."
 
         # Return a JSON formatted string
+        filtered_df = filtered_df.astype(str)
+        json_formatted = {"region": region, "policy": policy, "historical_data": []}
+        for _, row in filtered_df.iterrows():
+            json_formatted["historical_data"].append({
+                "date": row["Date"],
+                "score": row["Score"],
+                "notes": row["Notes"]
+            })
         return json.dumps(json_formatted, indent=4)
 
     async def async_invoke(self, args: Dict[str, Any], sly_data: Dict[str, Any]) -> str:
@@ -119,4 +110,4 @@ class PersistorReaderTool(CodedTool):
 
 if __name__ == "__main__":
     tool = PersistorReaderTool()
-    print(tool.invoke({"date": "", "region": ""}, {}))
+    print(tool.invoke({"date": "", "region": "", "policy": ""}, {}))
