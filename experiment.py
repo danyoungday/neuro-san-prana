@@ -12,9 +12,11 @@ import wandb
 from wandb.sdk.wandb_run import Run
 import yaml
 
+from modules.compile import compile_hocon
+
 
 PERSISTENCE_FILE_PATH = "data/persistence.csv"
-HOCON_FILE_PATH = "registries/prana.hocon"
+HOCON_FILE_PATH = "modules/prana.hocon"
 
 
 def prompt_format(row: pd.Series) -> str:
@@ -74,7 +76,7 @@ def get_wandb_artifact(run: Run,
     """
     # Download the old artifact
     api = wandb.Api()
-    old_hocon_path = api.artifact(artifact_path, type=artifact_type).download(root=download_root)
+    old_artifact_path = api.artifact(artifact_path, type=artifact_type).download(root=download_root)
 
     # Set up the artifact to be saved to.
     artifact_name = artifact_path[artifact_path.find("/")+1:artifact_path.find(":")]
@@ -84,9 +86,9 @@ def get_wandb_artifact(run: Run,
     update_artifact = False
     for new_file_path in new_file_paths:
         assert os.path.exists(new_file_path), f"New file path {new_file_path} does not exist."
-        old_file_path = os.path.join(old_hocon_path, os.path.basename(new_file_path))
+        old_file_path = os.path.join(old_artifact_path, os.path.basename(new_file_path))
         if not os.path.exists(old_file_path):
-            print(f"file {old_file_path} does not exist in the old artifact, adding it.")
+            print(f"file {old_file_path} does not exist in the old artifact, updating artifact.")
             update_artifact = True
             break
         else:
@@ -113,11 +115,12 @@ def wandb_setup(wandb_params: dict, wandb_data_path: str) -> tuple[Run, dict[str
     """
     Sets up the wandb run, creates necessary input artifacts, and logs the code.
     Returns a run object and dictionary of artifacts.
-    """    
+    """
     run = wandb.init(**wandb_params)
 
+    module_paths = [os.path.join("modules", f) for f in os.listdir("modules") if f.endswith(".hocon")]
     config_artifact = get_wandb_artifact(run,
-                                         new_file_paths=[HOCON_FILE_PATH],
+                                         new_file_paths=module_paths,
                                          artifact_path="prana/hocon:latest",
                                          artifact_type="config",
                                          download_root="data/artifacts/hocon")
@@ -205,8 +208,12 @@ def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force
 
 
 if __name__ == "__main__":
-    with open("config.yaml", "r") as f:
+    with open("config.yaml", "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
+
+    # Compile the HOCON modules into a single HOCON for Neuro-SAN
+    compile_hocon(tool_names=config["tools"], save_path="registries/prana.hocon")
+
     run_experiment(wandb_data_path=config['wandb_data_path'],
                    log_dir=f"logs/{config['name']}",
                    wandb_params={"project": "prana", "name": config['name']},

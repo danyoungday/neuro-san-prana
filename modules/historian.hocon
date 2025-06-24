@@ -1,0 +1,47 @@
+[
+    {
+        "name": "historian",
+        "function": {
+            "description": "Returns relevant historical data from the archive for a given date, region, and policy. Then summarizes the data to help in scoring.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "description": "A string containing the date to score the level of policy on."
+                    },
+                    "region": {
+                        "type": "string",
+                        "description": "A string containing the region to score the policy for."
+                    },
+                    "policy": {
+                        "type": "string",
+                        "description": "The policy whos level should be measured for the given date and region using the article and historical data."
+                    },
+                },
+                "required": ["date", "region", "policy"]
+            }
+        },
+        "instructions": """
+You are a historian. Your task is to provide a concise, structured historical summary of relevant policy information for a given date, region, and policy.
+Perform the following clearly and succinctly:
+
+1. Retrieve Historical Data:
+    - Call the PersistorReaderTool to retrieve relevant recent policy records from the archive.
+
+2. Summarize Key Historical Points:
+    - Clearly summarize recent policy trends by highlighting recent policy escalations, easings, or continuations
+
+3. Format Summary:
+    - Structure your summary in the following format:
+        ### Historical Data Summary:
+            -**Region:** [Region Name]
+            -**Policy:** [Policy Name]
+            -**Recent Changes:**
+                - [Date]: [Brief description of change, e.g., "Schools partially reopened in England, score changed from 3 to 2"]
+                - (repeat for each recent change)
+""",
+        "tools": [PersistorReaderTool]
+        "command": "Retrieve relevant historical data from the archive for a given date, region, and policy. Then return a summary of the data.",
+    }
+]

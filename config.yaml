@@ -1,3 +1,7 @@
 # Toy config file
-name: temp
+name: test-modules
 wandb_data_path: england-dataset:latest/england-dataset.csv
+tools:
+  - analyst
+  - historian
+  - tools

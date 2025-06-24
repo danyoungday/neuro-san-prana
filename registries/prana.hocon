@@ -1,355 +1,157 @@
-
-# Copyright (C) 2023-2025 Cognizant Digital Business, Evolutionary AI.
-# All Rights Reserved.
-# Issued under the Academic Public License.
-#
-# You can be released from the terms, and requirements of the Academic Public
-# License by purchasing a commercial license.
-# Purchase of a commercial license is mandatory for any use of the
-# neuro-san SDK Software in commercial settings.
-#
-# END COPYRIGHT
 {
-    "llm_config": {
-        "model_name": "gpt-4.1",
+  "llm_config": {
+    "model_name": "gpt-4.1"
+  },
+  "tools": [
+    {
+      "name": "news_analyst",
+      "function": {
+        "description": "\n    I can help you determine the level of policy for a date and region based on provided news articles.\n    Give me a date, region, policy, and news article URLs and I will provide you with a policy score for the date and region based on the news articles and historical data.\n    "
+      },
+      "instructions": "\nYou are a news article analyst. Your task is to assign a numeric policy score (based on provided guidelines) for a given region and date. You will carefully read news articles and consider relevant historical context to determine the correct score.\nExplicitly follow these steps. Do not skip any steps and do not return your final score and reasoning until you have completed all of them:\n\n1. Retrieve Historical Summary:\n    - Call the historian tool to get a summary of relevant past scores and notes.\n\n2. Load Guidelines:\n    - Call the ExtractDocs tool to retrieve the OxCGRT guidelines used for scoring.\n\n3. Scrape News Articles:\n    - Use the WebPageReaderTool to scrape the text of each news article from the provided URLs.\n\n4. Initial Analysis:\n    - Analyze each article individually, explicitly covering OxCGRT Technical Documentation: Clearly state how the reasoning aligns with the official OxCGRT scoring guidelines.\n    - Make sure the rationale behind the numeric score matches the table guidelines for the specific policy. Ensure that the rationale for your scoring does not fit better with a different score.\n    - Use the detailed interpretation guidance section for the specific policy.\n    - Cite specific parts of the guidelines that support your reasoning.\n        - If you are providing a score of 0 or 1, explain how your score follows the \"Delineating between policy levels 0 and 1\" section of the OxCGRT guidelines.\n    - Use the historical policy summary as context to inform your analysis, using the news articles to determine if the policy has changed from the previous score.\n    - Provide an explicit confidence level (high, medium, low) for your score. Clearly state any encountered ambiguity and how it impacts your scoring\n    - Do NOT use any internal knowledge of events that happened after the date you are scoring. Mention whenever you use any internal knowledge.\n\n5. Record Score\n    - Call the PersistorWriterTool to store your results in the archive.\n    - Provide it with the date, region, policy, score, and a brief one or two sentence summary of your reasoning, citing specific sections of articles, guidelines, or historical context that support your score.\n\nDo NOT return your final score and reasoning until you have completed all 5 of these steps.\n",
+      "tools": [
+        "historian",
+        "ExtractDocs",
+        "WebPageReaderTool",
+        "PersistorWriterTool"
+      ]
     },
-    "commondefs": {
-        "replacement_strings": {
-            "aaosa_instructions": """
-When you receive an inquiry, you will:
-
-    1. Call your tools to determine which down-chain agents in your tools are
-       responsible for all or part of it.
-    2. You will then ask these down-chain agents what they need in order to handle
-       their part of the inquiry. Once the requirements are gathered, you will,
-    3. Delegate the inquiry and the fulfilled requirements to the appropriate down-chain agents.
-    4. Once all down-chain agents respond, you will compile their responses and return the final response.
-
-You may, in turn, be called by other agents in the system and have to act as a down-chain to them.
-            """
-        },
-        "replacement_values": {
-            "aaosa_call": {
-                "description": "Depending on the mode, returns a natural language string in response.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "inquiry": {
-                            "type": "string",
-                            "description": "The inquiry"
-                        },
-                        "mode": {
-                            "type": "string",
-                            "description": """
-indicates whether the agent is being asked to determine if the inquiry belongs to it
-in its entirety or in part. or if it is being asked to provide requirements to fulfill
-the inquiry, if any. or if it is being asked to respond to the inquiry.
-                            """
-                        }
-                    },
-                    "required": [
-                        "inquiry",
-                        "mode"
-                    ]
-                }
+    {
+      "name": "historian",
+      "function": {
+        "description": "Returns relevant historical data from the archive for a given date, region, and policy. Then summarizes the data to help in scoring.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "A string containing the date to score the level of policy on."
             },
-            "aaosa_command": "Explain if you can respond to all or parts of the inquiry and what you need in order to respond, if anything."
+            "region": {
+              "type": "string",
+              "description": "A string containing the region to score the policy for."
+            },
+            "policy": {
+              "type": "string",
+              "description": "The policy whos level should be measured for the given date and region using the article and historical data."
+            }
+          },
+          "required": [
+            "date",
+            "region",
+            "policy"
+          ]
         }
+      },
+      "instructions": "\nYou are a historian. Your task is to provide a concise, structured historical summary of relevant policy information for a given date, region, and policy.\nPerform the following clearly and succinctly:\n\n1. Retrieve Historical Data:\n    - Call the PersistorReaderTool to retrieve relevant recent policy records from the archive.\n\n2. Summarize Key Historical Points:\n    - Clearly summarize recent policy trends by highlighting recent policy escalations, easings, or continuations\n\n3. Format Summary:\n    - Structure your summary in the following format:\n        ### Historical Data Summary:\n            -**Region:** [Region Name]\n            -**Policy:** [Policy Name]\n            -**Recent Changes:**\n                - [Date]: [Brief description of change, e.g., \"Schools partially reopened in England, score changed from 3 to 2\"]\n                - (repeat for each recent change)\n",
+      "tools": [
+        "PersistorReaderTool"
+      ],
+      "command": "Retrieve relevant historical data from the archive for a given date, region, and policy. Then return a summary of the data."
     },
-    "tools": [
-        # These tool definitions do not have to be in any particular order
-        # How they are linked and call each other is defined within their
-        # own specs.  This could be a graph, potentially even with cycles.
-
-        # This first guy is the "Front Man".  He is identified as such because
-        # he is the only one with no parameters in his function definition,
-        # and therefore he needs to talk to the outside world to get things rolling.
-        {
-            "name": "news_analyst",
-
-            # Note that there are no parameters defined for this guy's "function" key.
-            # This is the primary way to identify this tool as a front-man,
-            # distinguishing it from the rest of the tools.
-
-            "function": {
-
-                # When there are no function parameters to the front-man,
-                # its description acts as an initial prompt. 
-
-                "description": """
-I can help you determine the level of policy for a date and region based on provided news articles.
-Give me a date, region, policy, and news article URLs and I will provide you with a policy score for the date and region based on the news articles and historical data.
-"""
+    {
+      "name": "PersistorReaderTool",
+      "function": {
+        "description": "\nLoads relevant historical data from the archive for a given date, region, and policy.\nThe date, region, and policy must be passed as arguments.\nReturns recent scores for the given policy and region before or on the given date, and provides notes for each score.\nReturns the historical data sorted from oldest to newest as a JSON string. Here is an example in the expected format:\n        \"{\n            \"region\": \"England\",\n            \"policy\": \"C1E_School closing\",\n            \"historical_data\": [\n                {\n                    \"date\": \"2021-01-01\",\n                    \"score\": \"3\",\n                    \"notes\": \"All schools closed due to lockdown measures ...\"\n                },\n                ...\n            ]\n        }\"\n    You MUST call this tool to retrieve relevant historical data from the archive.\n            ",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "A string containing the date to score the level of policy on."
             },
-
-            "instructions": """
-You are a news article analyst. Your task is to assign a numeric policy score (based on provided guidelines) for a given region and date. You will carefully read news articles and consider relevant historical context to determine the correct score.
-Explicitly follow these steps. Do not skip any steps and do not return your final score and reasoning until you have completed all of them:
-
-1. Retrieve Historical Summary:
-    - Call the historian tool to get a summary of relevant past scores and notes.
-
-2. Load Guidelines:
-    - Call the ExtractDocs tool to retrieve the OxCGRT guidelines used for scoring.
-
-3. Scrape News Articles:
-    - Use the WebPageReaderTool to scrape the text of each news article from the provided URLs.
-
-4. Initial Analysis:
-    - Analyze each article individually, explicitly covering OxCGRT Technical Documentation: Clearly state how the reasoning aligns with the official OxCGRT scoring guidelines.
-        - Make sure the rationale behind the numeric score matches the table guidelines for the specific policy. Ensure that the rationale for your scoring does not fit better with a different score.
-        - Use the detailed interpretation guidance section for the specific policy.
-        - Cite specific parts of the guidelines that support your reasoning.
-            - If you are providing a score of 0 or 1, explain how your score follows the "Delineating between policy levels 0 and 1" section of the OxCGRT guidelines.
-    - Use the historical policy summary as context to inform your analysis, using the news articles to determine if the policy has changed from the previous score.
-    - Provide an explicit confidence level (high, medium, low) for your score. Clearly state any encountered ambiguity and how it impacts your scoring
-    - Do NOT use any internal knowledge of events that happened after the date you are scoring. Mention whenever you use any internal knowledge.
-
-5. Record Score
-    - Call the PersistorWriterTool to store your results in the archive.
-        - Provide it with the date, region, policy, score, and a brief one or two sentence summary of your reasoning, citing specific sections of articles, guidelines, or historical context that support your score.
-
-Do NOT return your final score and reasoning until you have completed all 5 of these steps.
-""",
-            "tools": ["historian", "ExtractDocs", "WebPageReaderTool", "PersistorWriterTool", "validator_coordinator"]
-        },
-        # HISTORIAN
-        {
-            "name": "historian",
-            "function": {
-                "description": "Returns relevant historical data from the archive for a given date, region, and policy. Then summarizes the data to help in scoring.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "date": {
-                            "type": "string",
-                            "description": "A string containing the date to score the level of policy on."
-                        },
-                        "region": {
-                            "type": "string",
-                            "description": "A string containing the region to score the policy for."
-                        },
-                        "policy": {
-                            "type": "string",
-                            "description": "The policy whos level should be measured for the given date and region using the article and historical data."
-                        },
-                    },
-                    "required": ["date", "region", "policy"]
-                }
+            "region": {
+              "type": "string",
+              "description": "A string containing the region to score the policy for."
             },
-            "instructions": """
-You are a historian. Your task is to provide a concise, structured historical summary of relevant policy information for a given date, region, and policy.
-Perform the following clearly and succinctly:
-
-1. Retrieve Historical Data:
-    - Call the PersistorReaderTool to retrieve relevant recent policy records from the archive.
-
-2. Summarize Key Historical Points:
-    - Clearly summarize recent policy trends by highlighting recent policy escalations, easings, or continuations
-
-3. Format Summary:
-    - Structure your summary in the following format:
-    ### Historical Data Summary:
-        -**Region:** [Region Name]
-        -**Policy:** [Policy Name]
-        -**Recent Changes:**
-            - [Date]: [Brief description of change, e.g., "Schools partially reopened in England, score changed from 3 to 2"]
-            - (repeat for each recent change)
-""",
-            "tools": [PersistorReaderTool]
-            "command": "Retrieve relevant historical data from the archive for a given date, region, and policy. Then return a summary of the data.",
-        },
-        # PERSISTOR READER TOOL
-        {
-            "name": "PersistorReaderTool",
-            "function": {
-                "description": """
-Loads relevant historical data from the archive for a given date, region, and policy.
-The date, region, and policy must be passed as arguments.
-Returns recent scores for the given policy and region before or on the given date, and provides notes for each score.
-Returns the historical data sorted from oldest to newest as a JSON string. Here is an example in the expected format:
-    "{
-        "region": "England",
-        "policy": "C1E_School closing",
-        "historical_data": [
-            {
-                "date": "2021-01-01",
-                "score": "3",
-                "notes": "All schools closed due to lockdown measures ..."
+            "policy": {
+              "type": "string",
+              "description": "The policy that the article is being scored for."
+            }
+          },
+          "required": [
+            "date",
+            "region",
+            "policy"
+          ]
+        }
+      },
+      "class": "persistor_reader.PersistorReaderTool"
+    },
+    {
+      "name": "ExtractDocs",
+      "function": {
+        "description": "\nReturns the text contents of all the files.\nYou MUST call this tool to read the text content of files.\n            ",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "directory": {
+              "type": "string",
+              "description": "The directory to read the text content of files from."
+            }
+          },
+          "required": []
+        }
+      },
+      "class": "extract_docs.ExtractDocs"
+    },
+    {
+      "name": "WebPageReaderTool",
+      "function": {
+        "description": "\nScrapes the text of a single news article from a provided article_url.\nThe url pointing to the news article must be passed as an argument.\nYou MUST call this tool to scrape a specified news article.\n            ",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "article_url": {
+              "type": "string",
+              "description": "The url of the news article to be scraped."
+            }
+          },
+          "required": [
+            "article_url"
+          ]
+        }
+      },
+      "class": "webpage_reader.WebPageReaderTool"
+    },
+    {
+      "name": "PersistorWriterTool",
+      "function": {
+        "description": "\nWrites newly scored data to the archive for a given date, region, policy, and score, as well as saving short notes giving reasoning for the score.\nThe date, region, policy, score, and notes must be passed as arguments.\nYou MUST call this tool to store newly scored data to the historical data archive.\n            ",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "A string containing the date to score the level of policy on."
             },
-            ...
-        ]
-    }"
-You MUST call this tool to retrieve relevant historical data from the archive.
-                """,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "date": {
-                            "type": "string",
-                            "description": "A string containing the date to score the level of policy on."
-                        },
-                        "region": {
-                            "type": "string",
-                            "description": "A string containing the region to score the policy for."
-                        },
-                        "policy": {
-                            "type": "string",
-                            "description": "The policy that the article is being scored for."
-                        }
-                    },
-                    "required": ["date", "region", "policy"]
-                }
+            "region": {
+              "type": "string",
+              "description": "A string containing the region to score the policy for."
             },
-            "class": "persistor_reader.PersistorReaderTool",
-        },
-        # DOC EXTRACTOR TOOL
-        {
-            "name": "ExtractDocs",
-            "function": {
-                "description": """
-    Returns the text contents of all the files.
-    You MUST call this tool to read the text content of files.
-                """,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "directory": {
-                            "type": "string",
-                            "description": "The directory to read the text content of files from."
-                        },
-                    },
-                    "required": []
-                }
+            "policy": {
+              "type": "string",
+              "description": "The policy that the article is being scored for."
             },
-            "class": "extract_docs.ExtractDocs"
-        },
-        # WEBPAGE READER TOOL
-        {
-            "name": "WebPageReaderTool",
-            "function": {
-                "description": """
-Scrapes the text of a single news article from a provided article_url.
-The url pointing to the news article must be passed as an argument.
-You MUST call this tool to scrape a specified news article.
-                """,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "article_url": {
-                            "type": "string",
-                            "description": "The url of the news article to be scraped."
-                        },
-                    },
-                    "required": ["article_url"]
-                }
+            "score": {
+              "type": "string",
+              "description": "The score for the policy on the given date in the given region."
             },
-            "class": "webpage_reader.WebPageReaderTool",
-        },
-        # VALIDATOR COORDINATOR
-//         {
-//             "name": "validator_coordinator",
-//             "function": {
-//                 "description": "Validates the proposed score and reasoning using its tools, then returns the final validation result.",
-//                 "parameters": {
-//                     "type": "object",
-//                     "properties": {
-//                         "reasoning": {
-//                             "type": "string",
-//                             "description": "A string containing the score and reasoning produced by the news analyst."
-//                         }
-//                     },
-//                     "required": ["reasoning"]
-//                 }
-//             },
-//             "instructions": """
-// You are a validation coordinator. You will read in the score and reasoning from the news analyst and then call all your validator tools to provide their validation of the score and reasoning.
-// Then you will compile their responses and return the final validation result. Only approve the scoring if ALL your validators approve it.
-// You will do so with the following format:
-//     ### Validation Result:
-//         - **Final Decision:** [Approved or Needs Revision]
-//         - **Validation Results:**
-//             - **[Validator Name]:**
-//                 - **Decision:** [Approved or Needs Revision]
-//                 - **Feedback:** [Detailed validation feedback referencing specific parts of the guidelines that support the validation]
-// """,
-//             "tools": ["guideline_validator"],
-//             "command": "Validate the proposed score and reasoning using each one of your validator tools. Compile their responses and only approve the scoring if ALL your validators approve it.",
-//         },
-//         # GUIDELINE VALIDATOR
-//         {
-//             "name": "guideline_validator",
-//             "function": {
-//                 "description": "Validates the proposed score and reasoning against the OxCGRT guidelines",
-//                 "parameters": {
-//                     "type": "object",
-//                     "properties": {
-//                         "reasoning": {
-//                             "type": "string",
-//                             "description": "A string containing the score and reasoning produced by the news analyst."
-//                         }
-//                     },
-//                     "required": ["reasoning"]
-//                 }
-//             },
-//             "instructions": """
-// You are the guideline validator. Your responsibility is to rigorously verify and validate the policy scores and associated reasoning provided by the news analyst, ensuring strict adherence to the official OxCGRT scoring guidelines.
-// Follow these steps explicitly:
-
-// 1. Read OxCGRT Guidelines with the ExtractDocs tool
-
-// 2. Validate Reasoning and Scoring Alignment
-//     - Ensure each step of the reasoning aligns with the official OxCGRT scoring guidelines. If any part of the reasoning does not align with the guidelines, you must request clarifications or revisions.
-//     - Here are some examples of discrepancies you may see:
-//         - The numeric score given is different from what should be given based on the reasoning and guidelines table of scores.
-//             - Example: "Schools are open but with mandatory COVID-19 testing which aligns with a score of 0." According to the "Delineating between policy levels 0 and 1" section of the guidelines, this should be a score of 1 because schools are open with restrictions.
-//         - The reasoning does not clearly explain how the score was derived from the news articles and the OxCGRT guidelines.
-
-// 3. Format your feedback with the following format:
-//     ### Guideline Validation Result:
-//         - **Decision:** [Approved or Needs Revision]
-//         - **Feedback:** [Your detailed validation feedback, making sure to reference specific parts of the guidelines that support your validation]
-// """,
-//             "tools": [ExtractDocs],
-//             "command": "Validate the proposed score and reasoning against the guidelines. Ensure strict adherence to the official scoring guidelines and provide feedback, either approving the score or requesting clarifications.",
-//         },
-        # PERSISTOR WRITER TOOL
-        {
-            "name": "PersistorWriterTool",
-            "function": {
-                "description": """
-Writes newly scored data to the archive for a given date, region, policy, and score, as well as saving short notes giving reasoning for the score.
-The date, region, policy, score, and notes must be passed as arguments.
-You MUST call this tool to store newly scored data to the historical data archive.
-                """,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "date": {
-                            "type": "string",
-                            "description": "A string containing the date to score the level of policy on."
-                        },
-                        "region": {
-                            "type": "string",
-                            "description": "A string containing the region to score the policy for."
-                        },
-                        "policy": {
-                            "type": "string",
-                            "description": "The policy that the article is being scored for."
-                        },
-                        "score": {
-                            "type": "string",
-                            "description": "The score for the policy on the given date in the given region."
-                        },
-                        "notes": {
-                            "type": "string",
-                            "description": "A brief summary of the reasoning for the score."
-                        }
-                    },
-                    "required": ["date", "region", "policy", "score", "notes"]
-                }
-            },
-            "class": "persistor_writer.PersistorWriterTool",
-        },
-    ]
+            "notes": {
+              "type": "string",
+              "description": "A brief summary of the reasoning for the score."
+            }
+          },
+          "required": [
+            "date",
+            "region",
+            "policy",
+            "score",
+            "notes"
+          ]
+        }
+      },
+      "class": "persistor_writer.PersistorWriterTool"
+    }
+  ]
 }
