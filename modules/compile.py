@@ -1,6 +1,8 @@
 import pyhocon
+import yaml
 
 BASE_PATH = "modules/base.hocon"
+COMPILE_PATH = "registries/prana.hocon"
 
 
 def compile_hocon(tool_names: list[str], save_path: str):
@@ -18,4 +20,6 @@ def compile_hocon(tool_names: list[str], save_path: str):
 
 
 if __name__ == "__main__":
-    compile_hocon(["analyst", "historian", "tools"], "modules/prana-compiled.hocon")
+    with open("config.yaml", "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+    compile_hocon(config["tools"], COMPILE_PATH)

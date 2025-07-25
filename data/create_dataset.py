@@ -6,6 +6,17 @@ import re
 import pandas as pd
 import wandb
 
+POLICY_COLS = [
+    "C1E_School closing",
+    "C2E_Workplace closing",
+    "C3E_Cancel public events",
+    "C4E_Restrictions on gatherings",
+    "C5E_Close public transport",
+    "C6E_Stay at home requirements",
+    "C7E_Restrictions on internal movement",
+    "C8E_International travel controls"
+]
+
 
 def extract_urls(row: pd.Series) -> list[str]:
     """
@@ -99,24 +110,61 @@ def update_artifact(artifact_name: str, file_paths: list[str]):
     run.finish()
 
 
-def main():
+def create_australia_dataset():
     """
-    Creates a dataset and updates the artifact in wandb.
+    Creates australia dataset and updates the artifact in wandb.
     """
     save_path = "data/australia-dataset.csv"
-    policy_cols = ["C1E_School closing",
-                   "C2E_Workplace closing",
-                   "C3E_Cancel public events",
-                   "C4E_Restrictions on gatherings",
-                   "C5E_Close public transport",
-                   "C6E_Stay at home requirements",
-                   "C7E_Restrictions on internal movement",
-                   "C8E_International travel controls"]
     location_filter = {"CountryName": "Australia"}
     data_paths = [f"data/raw/OxCGRT_fullwithnotes_national_{year}_v1.csv" for year in [2020, 2021, 2022]]
-    create_dataset(data_paths, location_filter, policy_cols, save_path)
+    create_dataset(data_paths, location_filter, POLICY_COLS, save_path)
     update_artifact("australia-dataset", ["data/australia-dataset.csv"])
 
 
+def create_england_dataset():
+    """
+    Creates england dataset and updates the artifact in wandb.
+    """
+    save_path = "data/england-dataset.csv"
+
+    location_filter = {"CountryName": "United Kingdom", "RegionName": "England"}
+    data_paths = ["data/raw/OxCGRT_raw_GBR_v1.csv"]
+    create_dataset(data_paths, location_filter, POLICY_COLS, save_path)
+    update_artifact("england-dataset", ["data/england-dataset.csv"])
+
+
+def create_germany_dataset():
+    """
+    Creates germany dataset and updates the artifact in wandb.
+    """
+    save_path = "data/germany-dataset.csv"
+
+    location_filter = {"CountryName": "Germany"}
+    data_paths = [f"data/raw/OxCGRT_fullwithnotes_national_{year}_v1.csv" for year in [2020, 2021, 2022]]
+    create_dataset(data_paths, location_filter, POLICY_COLS, save_path)
+    update_artifact("germany-dataset", ["data/germany-dataset.csv"])
+
+
+def process_dataset(df: pd.DataFrame, policy: str, shorten: bool = False) -> pd.DataFrame:
+    """
+    Preprocesses the dataset into a format that is easy to prompt for the experiment.
+    """
+    df["Date"] = pd.to_datetime(df["Date"])
+    source_col = f"{policy[:2]}_Source"
+    notes_col = f"{policy[:2]}_Notes"
+    df = df.dropna(subset=[source_col])
+    df = df.sort_values(by=["Date"])
+    if shorten:
+        forward = df[policy].shift(1).fillna(0)
+        back = df[policy].shift(-1).fillna(0)
+        df = df[(df[policy] != forward) | (df[policy] != back)]
+    region_col = "CountryName" if df["RegionName"].isna().all() else "RegionName"
+    df = df[["Date", region_col, policy, source_col, notes_col]]
+    df = df.rename(columns={region_col: "Region", policy: "Score", source_col: "Source", notes_col: "Notes"})
+    df["Policy"] = policy
+
+    return df.copy()
+
+
 if __name__ == "__main__":
-    main()
+    create_germany_dataset()

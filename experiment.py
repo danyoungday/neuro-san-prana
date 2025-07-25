@@ -10,9 +10,10 @@ import pandas as pd
 from tqdm import tqdm
 import wandb
 from wandb.sdk.wandb_run import Run
+# pylint: disable=wrong-import-order
 import yaml
 
-from modules.compile import compile_hocon
+from data.create_dataset import process_dataset
 
 
 PERSISTENCE_FILE_PATH = "data/persistence.csv"
@@ -156,7 +157,12 @@ def wandb_cleanup(run: Run, log_dir: str):
     run.finish()
 
 
-def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force: bool = False):
+def run_experiment(wandb_data_path: str,
+                   policy: str,
+                   shorten: bool,
+                   log_dir: str,
+                   wandb_params: dict,
+                   force: bool = False):
     """
     Runs the experiment generating a dataset using PRANA.
     """
@@ -183,10 +189,11 @@ def run_experiment(wandb_data_path: str, log_dir: str, wandb_params: dict, force
     persistence = pd.DataFrame(columns=["Date", "Region", "Policy", "Score", "Notes"])
     persistence.to_csv(PERSISTENCE_FILE_PATH, index=False, header=True)
 
-    # Load data and run experiment on it
+    # Load data, preprocess it, and run experiment on it
     data_dir = artifacts_dict["data"].download(root=f"data/artifacts/{wandb_data_path.split('/')[0]}")
     df = pd.read_csv(os.path.join(data_dir, wandb_data_path.split("/")[1]))
-    for _, row in tqdm(df.iterrows(), desc="Processing rows", total=len(df)):
+    dataset = process_dataset(df, policy, shorten=shorten)
+    for _, row in tqdm(dataset.iterrows(), desc="Processing rows", total=len(dataset)):
         prompt = prompt_format(row)
 
         state = {
@@ -211,10 +218,9 @@ if __name__ == "__main__":
     with open("config.yaml", "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
-    # Compile the HOCON modules into a single HOCON for Neuro-SAN
-    compile_hocon(tool_names=config["tools"], save_path="registries/prana.hocon")
-
     run_experiment(wandb_data_path=config['wandb_data_path'],
+                   policy=config["policy"],
+                   shorten=config["shorten"],
                    log_dir=f"logs/{config['name']}",
                    wandb_params={"project": "prana", "name": config['name']},
                    force=True)

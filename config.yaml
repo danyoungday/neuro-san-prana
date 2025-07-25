@@ -1,7 +1,10 @@
 # Toy config file
-name: test-modules
-wandb_data_path: england-dataset:latest/england-dataset.csv
+name: germany-summarizer
+wandb_data_path: germany-dataset:latest/germany-dataset.csv
+shorten: true
+policy: C1E_School closing
 tools:
   - analyst
   - historian
+  - summarizer
   - tools

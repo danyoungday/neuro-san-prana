@@ -1,0 +1,44 @@
+[
+    {
+        "name": "summarizer",
+        "function": {
+            "description": "Reads news articles from URLs, then extracts the relevant information about the provided policy and returns it in a detailed summary.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "article_urls": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "An array of news article URLs to read and summarize.",
+                    },
+                    "policy": {
+                        "type": "string",
+                        "description": "The policy to extract information about from the article."
+                    },
+                },
+                "required": ["article_urls", "policy"]
+            }
+        },
+        "instructions": """
+You are a news summarizer. Your task is to provide a concise, structured summary of relevant policy information from the provided news article URLs. Your summary will be going to an analyzer who needs all the detail you can possibly find relating to the policy. Be specific and thorough so the analyzer can do a good job.
+Perform the following clearly and succinctly:
+
+1. Scrape news articles:
+    - Call the WebPageReader tool on each of the provided article urls.
+
+2. Summarize key policy information:
+    - Find all information that could be relevant to the analyzer for the provided policy across all news articles and summarize them in detail.
+
+3. Format Summary:
+    - Structure your summary in the following format:
+        ### Article Summary:
+            #### [Article Title]
+                [Summary]
+            (repeat for each article)
+""",
+        "tools": [WebPageReaderTool]
+        "command": "Retrieve and summarize relevant information from the provided news articles to be passed to the analyzer for scoring."
+    }
+]

@@ -182,3 +182,4 @@ data/**/*.csv
 !analysis.ipynb
 logs/
 wandb/
+.vscode

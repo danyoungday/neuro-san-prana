@@ -25,6 +25,7 @@ python -m run
 
 In order to run the experiment, you will need to set other environment variables:
 ```bash
+export AGENT_LLM_INFO_FILE="./llm_info.hocon"
 export PYTHONPATH=$PWD
 export AGENT_MANIFEST_FILE="./registries/manifest.hocon"
 export AGENT_MANIFEST_UPDATE_PERIOD_SECONDS=5
@@ -33,6 +34,7 @@ export AGENT_TOOL_PATH="./coded_tools"
 
 Then run with:
 ```bash
+python -m modules.compile
 python -m neuro_san.service.agent_main_loop
 python -m experiment
 ```

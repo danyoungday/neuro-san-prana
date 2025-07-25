@@ -8,11 +8,11 @@
       "function": {
         "description": "\n    I can help you determine the level of policy for a date and region based on provided news articles.\n    Give me a date, region, policy, and news article URLs and I will provide you with a policy score for the date and region based on the news articles and historical data.\n    "
       },
-      "instructions": "\nYou are a news article analyst. Your task is to assign a numeric policy score (based on provided guidelines) for a given region and date. You will carefully read news articles and consider relevant historical context to determine the correct score.\nExplicitly follow these steps. Do not skip any steps and do not return your final score and reasoning until you have completed all of them:\n\n1. Retrieve Historical Summary:\n    - Call the historian tool to get a summary of relevant past scores and notes.\n\n2. Load Guidelines:\n    - Call the ExtractDocs tool to retrieve the OxCGRT guidelines used for scoring.\n\n3. Scrape News Articles:\n    - Use the WebPageReaderTool to scrape the text of each news article from the provided URLs.\n\n4. Initial Analysis:\n    - Analyze each article individually, explicitly covering OxCGRT Technical Documentation: Clearly state how the reasoning aligns with the official OxCGRT scoring guidelines.\n    - Make sure the rationale behind the numeric score matches the table guidelines for the specific policy. Ensure that the rationale for your scoring does not fit better with a different score.\n    - Use the detailed interpretation guidance section for the specific policy.\n    - Cite specific parts of the guidelines that support your reasoning.\n        - If you are providing a score of 0 or 1, explain how your score follows the \"Delineating between policy levels 0 and 1\" section of the OxCGRT guidelines.\n    - Use the historical policy summary as context to inform your analysis, using the news articles to determine if the policy has changed from the previous score.\n    - Provide an explicit confidence level (high, medium, low) for your score. Clearly state any encountered ambiguity and how it impacts your scoring\n    - Do NOT use any internal knowledge of events that happened after the date you are scoring. Mention whenever you use any internal knowledge.\n\n5. Record Score\n    - Call the PersistorWriterTool to store your results in the archive.\n    - Provide it with the date, region, policy, score, and a brief one or two sentence summary of your reasoning, citing specific sections of articles, guidelines, or historical context that support your score.\n\nDo NOT return your final score and reasoning until you have completed all 5 of these steps.\n",
+      "instructions": "\nYou are a news article analyst. Your task is to assign a numeric policy score (based on provided guidelines) for a given region and date. You will carefully read news articles and consider relevant historical context to determine the correct score.\nExplicitly follow these steps. Do not skip any steps and do not return your final score and reasoning until you have completed all of them:\n\n1. Retrieve Historical Summary:\n    - Call the historian tool to get a summary of relevant past scores and notes.\n\n2. Load Guidelines:\n    - Call the ExtractDocs tool to retrieve the OxCGRT guidelines used for scoring.\n\n3. Retrieve News Article Information:\n    - Use the summarizer tool on all the provided news articles to retrieve relevant information to scoring.\n\n4. Initial Analysis:\n    - Analyze the articles, explicitly covering OxCGRT Technical Documentation: Clearly state how the reasoning aligns with the official OxCGRT scoring guidelines.\n    - Make sure the rationale behind the numeric score matches the table guidelines for the specific policy. Ensure that the rationale for your scoring does not fit better with a different score.\n    - Use the detailed interpretation guidance section for the specific policy.\n    - Cite specific parts of the article information that supports your reasoning.\n    - Cite specific parts of the guidelines that support your reasoning.\n        - If you are providing a score of 0 or 1, explain how your score follows the \"Delineating between policy levels 0 and 1\" section of the OxCGRT guidelines.\n    - Use the historical policy summary as context to inform your analysis, using the news articles to determine if the policy has changed from the previous score.\n    - Provide an explicit confidence level (high, medium, low) for your score. Clearly state any encountered ambiguity and how it impacts your scoring\n    - Do NOT use any internal knowledge of events that happened after the date you are scoring. Mention whenever you use any internal knowledge.\n\n5. Record Score\n    - Call the PersistorWriterTool to store your results in the archive.\n    - Provide it with the date, region, policy, score, and a brief one or two sentence summary of your reasoning, citing specific sections of articles, guidelines, or historical context that support your score.\n\nDo NOT return your final score and reasoning until you have completed all 5 of these steps.\n",
       "tools": [
         "historian",
+        "summarizer",
         "ExtractDocs",
-        "WebPageReaderTool",
         "PersistorWriterTool"
       ]
     },
@@ -48,6 +48,37 @@
         "PersistorReaderTool"
       ],
       "command": "Retrieve relevant historical data from the archive for a given date, region, and policy. Then return a summary of the data."
+    },
+    {
+      "name": "summarizer",
+      "function": {
+        "description": "Reads news articles from URLs, then extracts the relevant information about the provided policy and returns it in a detailed summary.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "article_urls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "An array of news article URLs to read and summarize."
+            },
+            "policy": {
+              "type": "string",
+              "description": "The policy to extract information about from the article."
+            }
+          },
+          "required": [
+            "article_urls",
+            "policy"
+          ]
+        }
+      },
+      "instructions": "\nYou are a news summarizer. Your task is to provide a concise, structured summary of relevant policy information from the provided news article URLs. Your summary will be going to an analyzer who needs all the detail you can possibly find relating to the policy. Be specific and thorough so the analyzer can do a good job.\nPerform the following clearly and succinctly:\n\n1. Scrape news articles:\n    - Call the WebPageReader tool on each of the provided article urls.\n\n2. Summarize key policy information:\n    - Find all information that could be relevant to the analyzer for the provided policy across all news articles and summarize them in detail.\n\n3. Format Summary:\n    - Structure your summary in the following format:\n        ### Article Summary:\n            #### [Article Title]\n                [Summary]\n            (repeat for each article)\n",
+      "tools": [
+        "WebPageReaderTool"
+      ],
+      "command": "Retrieve and summarize relevant information from the provided news articles to be passed to the analyzer for scoring."
     },
     {
       "name": "PersistorReaderTool",

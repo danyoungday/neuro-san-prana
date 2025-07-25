@@ -8,6 +8,7 @@
 # neuro-san-demos SDK Software in commercial settings.
 #
 from io import BytesIO
+import time
 from typing import Any
 from typing import Dict
 from typing import Union
@@ -84,7 +85,27 @@ class WebPageReaderTool(CodedTool):
         Delegates to the synchronous invoke method for now.
         """
         return self.invoke(args, sly_data)
-        
+
+    def request_content(self, url: str, headers: dict[str, str]) -> requests.Response:
+        """
+        Requests the content from a given URL with specified headers. If the first try fails, it retries once after a
+        short delay.
+        """
+        try:
+            response = requests.get(url, headers=headers, timeout=60)
+            response.raise_for_status()
+        # We try again if the request fails. If the second try doesn't work, just return the error message.
+        except requests.RequestException as e:
+            print("Failed to fetch webpage. Retrying in 10 seconds...")
+            print(f"Error: {e}")
+            time.sleep(10)
+            try:
+                response = requests.get(url, headers=headers, timeout=60)
+                response.raise_for_status()
+            except requests.RequestException as f:
+                print(f"Retry failed: {f}")
+                return None
+        return response
 
     def read_html(self, url: str, headers: dict[str, str]) -> str:
         """
@@ -93,8 +114,9 @@ class WebPageReaderTool(CodedTool):
         :param url: The URL of the webpage to read.
         :return: The text content of the webpage.
         """
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        response = self.request_content(url, headers)
+        if response is None:
+            return "Error: Failed to fetch the webpage after retrying."
 
         soup = BeautifulSoup(response.text, "html.parser")
         texts = soup.stripped_strings
@@ -108,8 +130,9 @@ class WebPageReaderTool(CodedTool):
         :param url: The URL of the PDF file to read.
         :return: The text content of the PDF file.
         """
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        response = self.request_content(url, headers)
+        if response is None:
+            return "Error: Failed to fetch the PDF after retrying."
 
         # Step 2: Load PDF into pypdf reader
         pdf_file = BytesIO(response.content)
